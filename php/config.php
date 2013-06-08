@@ -7,7 +7,7 @@ require_once("server.conf.php");
 define("DEBUG",true);
 //---------------------------------------------------//
 
-define("TABLE_PREFIX"   ,"hp_");   //テーブルプレフィックス
+define("TABLE_PREFIX"   ,"hp2_");   //テーブルプレフィックス
 define("JQNAME"         ,"jquery.js");          //jQueryファイル名
 
 
@@ -18,7 +18,6 @@ define("SALESTART"      ,30);//新商品の抽出基準。何日前までを新�
 define("NEWITEM"        ,20);//新商品の表示件数。
 define("PAGETITLE"      ,2); //改ページ挿入位置。1ページに印刷するサブタイトル数
 define("PAGEITEM"       ,13);//改ページ挿入位置。1ページに印刷するアイテム数
-
 
 //---------------------------------------------------//
 // Web系ディレクトリ系定数
@@ -402,7 +401,7 @@ $TABLES=array(
                                ,"title"=>array( "type"   =>"varchar(99)"
                                                ,"null"   =>"not null"
                                                ,"extra"  =>""
-                                               ,"default"=>0
+                                               ,"default"=>"''"
                                                ,"primary"=>""
                                                ,"local"  =>"タイトル"
                                               )//title
@@ -521,6 +520,5 @@ EOF;
 $FACEBTN=<<<EOF
 <div class="fb-like" data-href="__URL__" data-send="false" data-layout="button_count" data-width="450" data-show-faces="false"></div>
 EOF;
-
 
 ?>
