@@ -60,7 +60,7 @@ class ImportData extends db{
   }//while
 
   if(! $this->csvdata){
-   throw new exception ($this->csvfilepath.":データが空ですよ...");
+   //throw new exception ($this->csvfilepath.":データが空ですよ...");
   }
   //列情報をもとに$this->itemsへ格納
   foreach($this->csvdata as $rownum=>$rowdata){
@@ -180,280 +180,6 @@ class ImportData extends db{
  }//public function setJanPrice(){
 
 //---------------------------------------------------------//
-// 既存マスタ更新
-// 更新方法:既存データ上書き
-//---------------------------------------------------------//
- public function setJanUpdate(){
-  $this->filename=JANMAS;
-  $this->tablename=TB_JANMAS;
-
-  //データゲット
-  $this->getData();
-  try{
-   //トランザクション開始
-   $this->BeginTran();
-
-   //データ更新
-   foreach($this->items["data"] as $rownum =>$rowdata){
-    if (! $rowdata["status"]) continue;  //エラーデータを除く
-
-    //既存データかつ売価が変更されている商品を抽出
-    //(これをしないと新規として登録されてしまう)
-    $this->select="jcode";
-    $this->from =TB_JANMAS;
-    $this->where ="jcode='".$rowdata["jcode"]."'";
-    if($this->getArray()){
-     //データ更新
-     foreach($rowdata as $col=>$val){
-      //ステータス列、エラー列を除く
-      if($col==="status"||$col==="err") continue;
-      $this->updatecol[$col]=$val;
-     }//foreach
-     $this->from=TB_JANMAS;
-     $this->where="jcode=".$rowdata["jcode"]; //既存データ上書き
-     $this->update();
-    }//if($this->getArray()){
-   }//foreach($this->items["data"] as $rownum =>$rowdata){
-   //コミット
-   $this->Commit();
-  }//try
-  catch(Exception $e){
-   $this->RollBack();
-   throw $e;
-  }//catch
- }//public function setJanPrice(){
-
-//---------------------------------------------------------//
-// チラシアイテムデータを更新
-// 更新方法:登録されているチラシを削除後、CSVデータを登録
-//---------------------------------------------------------//
- public function setItem(){
-  $this->filename=ITEMS;
-  $this->tablename=TB_SALEITEMS;
-
-  //チラシ番号初期化
-  $flg=0;
-
-  //データゲット
-  $this->getData();
-
-  try{
-   //トランザクション開始
-   $this->BeginTran();
- 
-   //データ更新
-   foreach($this->items["data"] as $rownum =>$rowdata){
-    if (! $rowdata["status"]) continue;  //エラーデータを除く
-
-    //既存データ削除
-    if($flg!==$rowdata["flg0"]){
-     $this->from=TB_SALEITEMS;
-     $this->where="flg0='".$rowdata["flg0"]."'";
-     $this->where.=" and saletype=".$rowdata["saletype"];
-     $this->delete();
-    }//if
-    $flg=$rowdata["flg0"];
-
-    foreach($rowdata as $col=>$val){
-     //ステータス列、エラー列を除く
-     if($col==="status"||$col==="err") continue;
-     $this->updatecol[$col]=$val;
-    }//foreach
-    $this->from=TB_SALEITEMS;
-    $this->where="id=0";//無条件追加
-    $this->update();
-   }//foreach($this->items["data"] as $rownum =>$rowdata){
-
-   //コミット
-   $this->Commit();
-  }//try
-  catch(Exception $e){
-   $this->RollBack();
-   throw $e;
-  }//catch
- }//public function setItem(){
-
-//---------------------------------------------------------//
-// カレンダーアイテムを更新
-// 更新方法:該当月のデータを削除後、CSVデータを登録
-//---------------------------------------------------------//
- public function setCal(){
-  $this->filename=CAL;
-  $this->tablename=TB_SALEITEMS;
-  $tuki=0;
-
-  //データゲット
-  $this->getData();
-
-  try{
-   //トランザクション開始
-   $this->BeginTran();
-
-   //データ更新
-   foreach($this->items["data"] as $rownum =>$rowdata){
-    if (! $rowdata["status"]) continue;  //エラーデータを除く
-
-    //更新する月をゲット
-    if($tuki!==date("m",strtotime($rowdata["saleday"]))){
-     $ut=strtotime($rowdata["saleday"]);
-     $s=date("Y-m-d",mktime(0,0,0,date("m",$ut),1,date("Y",$ut)));
-     $e=date("Y-m-d",mktime(0,0,0,date("m",$ut)+1,0,date("Y",$ut)));
-     $this->from=TB_SALEITEMS;
-     $this->where =" saleday between '".$s."' and '".$e."'";
-     $this->where.=" and saletype=".$rowdata["saletype"];
-     $this->delete();
-    }//if
-    $tuki=date("m",strtotime($rowdata["saleday"]));
-
-    foreach($rowdata as $col=>$val){
-     //ステータス列、エラー列を除く
-     if($col==="status"||$col==="err") continue;
-     $this->updatecol[$col]=$val;
-    }//foreach
-    $this->from=TB_SALEITEMS;
-    $this->where="id=0";//無条件追加
-    $this->update();
-   }//foreach($this->items["data"] as $rownum =>$rowdata){
-
-   //コミット
-   $this->Commit();
-
-  }//try
-  catch(Exception $e){
-   $this->RollBack();
-   throw $e;
-  }//catch
- }//public function setCal(){
-
-//---------------------------------------------------------//
-// メールアイテムを更新
-// 更新方法:該当日のデータを削除後、CSVデータを登録
-//---------------------------------------------------------//
- public function setMailItem(){
-  $this->filename=MAILITEMS;
-  $this->tablename=TB_SALEITEMS;
-  $saleday=0;
-  $saletype=null;
-
-  //データゲット
-  $this->getData();
-
-  try{
-   //トランザクション開始
-   $this->BeginTran();
-
-   //データ更新
-   foreach($this->items["data"] as $rownum=>$rowdata){
-    if (! $rowdata["status"]) continue;  //エラーデータを除く
-
-    //該当データ削除
-    if($saleday!==$rowdata["saleday"] || $saletype!==$rowdata["saletype"]){
-     $this->from=TB_SALEITEMS;
-     $this->where =" saleday='".$rowdata["saleday"]."'";
-     $this->where.=" and saletype=".$rowdata["saletype"];
-     $this->delete();
-    }//if
-    $saleday=$rowdata["saleday"];
-    $saletype=$rowdata["saletype"];
-
-    //データ更新
-    foreach($rowdata as $col=>$val){
-     //ステータス列、エラー列を除く
-     if($col==="status"||$col==="err") continue;
-     $this->updatecol[$col]=$val;
-    }//foreach
-    $this->from=TB_SALEITEMS;
-    $this->where="id=0";//無条件追加
-    $this->update();
-   }//foreach
-   $this->Commit();
-  }//try
-  catch(Exception $e){
-   $this->RollBack();
-   throw $e;
-  }
- }// public function setMailItem(){
-
-//---------------------------------------------------------//
-// ご予約商品を更新
-// 更新方法:該当データを全削除後、CSVデータを登録
-//---------------------------------------------------------//
- public function setGoyoyaku(){
-  $this->filename=GOYOYAKU;
-  $this->tablename=TB_SALEITEMS;
-
-  //データゲット
-  $this->getData();
-  
-  try{
-   //トランザクション開始
-   $this->BeginTran();
-
-   //既存データ一括削除
-   $this->from=$this->tablename;
-   $this->where="saletype=".$this->items["data"][0]["saletype"];
-   $this->delete();
-
-   //データ更新
-   foreach($this->items["data"] as $rownum=>$rowdata){
-    if (! $rowdata["status"]) continue;  //エラーデータを除く
-    foreach($rowdata as $col=>$val){
-     //ステータス列、エラー列を除く
-     if($col==="status"||$col==="err") continue;
-     $this->updatecol[$col]=$val;
-    }
-    $this->from=TB_SALEITEMS;
-    $this->where="id=0";//無条件追加
-    $this->update();
-   }//foreach
-   $this->Commit();
-  }//try
-  catch(Exception $e){
-   $this->RollBack();
-   throw $e;
-  }//catch
- }// public function setGoyoyaku(){
-//---------------------------------------------------------//
-// ページ情報を更新
-// 更新方法:該当データを全削除後、CSVデータを登録
-//---------------------------------------------------------//
- public function setPageConf(){
-  $this->filename=PAGECONF;
-  $this->tablename=TB_PAGECONF;
-
-  //データゲット
-  $this->getData();
-  
-  try{
-   //トランザクション開始
-   $this->BeginTran();
-
-   //データ削除
-   $this->from=TB_PAGECONF;
-   $this->where="id>0";
-   $this->delete();
-
-   //データ更新
-   foreach($this->items["data"] as $rownum=>$rowdata){
-    if (! $rowdata["status"]) continue;  //エラーデータを除く
-    foreach($rowdata as $col=>$val){
-     if($col=="status") continue;
-     //echo $col." ".$val."\n";
-     $this->updatecol[$col]=$val;
-    }//foreach
-    $this->from=TB_PAGECONF;
-    $this->where="id=0";
-    $this->update();
-   }//foreach
-   $this->Commit();
-  }//try
-  catch(Exception $e){
-   $this->RollBack();
-   throw $e;
-  }//catch
- }// public function setPageConf(){
-
-//---------------------------------------------------------//
 // ラインマスタ更新
 // 更新方法:該当データを全削除後、CSVデータを登録
 //---------------------------------------------------------//
@@ -532,6 +258,88 @@ class ImportData extends db{
    throw $e;
   }//catch
  }// public function setClsMas(){
+
+//---------------------------------------------------------//
+// アイテム更新
+// 更新方法:該当データを全削除後、CSVデータを登録
+//---------------------------------------------------------//
+ public function setSaleItems(){
+  $this->filename=SALEITEMS;
+  $this->tablename=TB_SALEITEMS;
+
+  //データゲット
+  $this->getData();
+  
+  try{
+   //トランザクション開始
+   $this->BeginTran();
+
+   //データ削除
+   $this->from=$this->tablename;
+   $this->where="id>0";
+   $this->delete();
+
+   //データ更新
+   foreach($this->items["data"] as $rownum=>$rowdata){
+    if (! $rowdata["status"]) continue;  //エラーデータを除く
+    foreach($rowdata as $col=>$val){
+     if($col=="status") continue;
+     //echo $col." ".$val."\n";
+     $this->updatecol[$col]=$val;
+    }//foreach
+    $this->from=$this->tablename;
+    $this->where="id=0";
+    $this->update();
+   }//foreach
+   $this->Commit();
+  }//try
+  catch(Exception $e){
+   $this->RollBack();
+   throw $e;
+  }//catch
+ }// public function setSaleItems(){
+
+//---------------------------------------------------------//
+// ページ情報を更新
+// 更新方法:該当データを全削除後、CSVデータを登録
+//---------------------------------------------------------//
+ public function setPageConf(){
+  $this->filename=PAGECONF;
+  $this->tablename=TB_PAGECONF;
+
+  //データゲット
+  $this->getData();
+  
+  try{
+   //トランザクション開始
+   $this->BeginTran();
+
+   //データ削除
+   $this->from=TB_PAGECONF;
+   $this->where="id>0";
+   $this->delete();
+
+   //データ更新
+   foreach($this->items["data"] as $rownum=>$rowdata){
+    if (! $rowdata["status"]) continue;  //エラーデータを除く
+    foreach($rowdata as $col=>$val){
+     if($col=="status") continue;
+     //echo $col." ".$val."\n";
+     $this->updatecol[$col]=$val;
+    }//foreach
+    $this->from=TB_PAGECONF;
+    $this->where="id=0";
+    $this->update();
+   }//foreach
+   $this->Commit();
+  }//try
+  catch(Exception $e){
+   $this->RollBack();
+   throw $e;
+  }//catch
+ }// public function setPageConf(){
+
+
 }//class IMPORTDATA extends db{
 
 ?>
