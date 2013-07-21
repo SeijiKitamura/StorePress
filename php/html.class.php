@@ -115,6 +115,19 @@ EOF;
 <!-- -------------- div header start ---------------------- -->
    <div id="header">
 
+<!-- -------------- div topnavi start -------------------- -->
+    <div class="topnavi">
+    __TOPNAVI__
+    </div>
+<!-- -------------- div topnavi end   -------------------- -->
+    <div class='clr'></div>
+
+<!-- -------------- div corpinfo start -------------------- -->
+    <div class="corpinfo">
+     <!-- corpinfo -->
+    </div>
+<!-- -------------- div corpinfo end   -------------------- -->
+
 <!-- -------------- div logo   start ---------------------- -->
     <div class="logo">
      <a href="index.php">
@@ -123,18 +136,7 @@ EOF;
     </div>
 <!-- -------------- div logo   end   ---------------------- -->
 
-<!-- -------------- div mininavi start -------------------- -->
-    <div class="mininavi">
-    __MININAVI__
-    </div>
-<!-- -------------- div mininavi end   -------------------- -->
 
-<!-- -------------- div timesale start -------------------- -->
-    <div class="timesale">
-    __TIMESALE__
-    </div>
-
-<!-- -------------- div timesale end   -------------------- -->
     <div class='clr'></div>
    </div>
 <!-- -------------- div header end   ---------------------- -->
@@ -173,7 +175,7 @@ EOF;
 //----------------------------------------------------------//
 // ヘッダー出力
 //----------------------------------------------------------//
- public static function setheader($base,$topgrp,$centergrp){
+ public static function setheader($base,$topgrp){
   $html=self::header_tmp();
   //ロゴをセット
   $pattern="__LOGO__";
@@ -186,14 +188,14 @@ EOF;
   $html=str_replace($pattern,$replace,$html);
 
   //トップグループをセット
-  $pattern="__MININAVI__";
+  $pattern="__TOPNAVI__";
   $replace=self::setpagelink($topgrp,$base);
   $html=str_replace($pattern,$replace,$html);
 
-  //センターグループをセット
-  $pattern="__TIMESALE__";
-  $replace=self::setpagelink($centergrp,$base);
-  $html=str_replace($pattern,$replace,$html);
+//  //センターグループをセット
+//  $pattern="__TIMESALE__";
+//  $replace=self::setpagelink($centergrp,$base);
+//  $html=str_replace($pattern,$replace,$html);
 
   return $html;
  }
@@ -936,6 +938,19 @@ EOF;
   }//foreach
   return $item;
  }//public static function outJan($data,$jcode){
+
+ public static function storeinfo($data){
+  $html="<ul>";
+  foreach($data as $rownum=>$rowdata){
+   $html.="<li>";
+   $html.="<div class='jpnname'>".$rowdata["jpnname"]."</div>";
+   $html.="<div class='val'>".$rowdata["val"]."</div>";
+   $html.="<div class='clr'></div>";
+   $html.="</li>";
+  }//foreach
+  $html.="</ul>";
+  return $html;
+ }// public static function storeinfo($data){
 }//class html{
 
 function is_mobile () {
