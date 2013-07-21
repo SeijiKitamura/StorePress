@@ -60,6 +60,7 @@ define("LINMAS"   ,"linmas");            //部門マスタ
 define("SALEITEMS","saleitems");         //セールアイテム
 define("PAGECONF" ,"pageconfig");        //ページごとの設定
 define("SALETYPE" ,"saletype");          //セールタイプ設定
+define("STORE"    ,"storeprofile");      //会社情報
 //---------------------------------------------------//
 
 //---------------------------------------------------//
@@ -77,6 +78,7 @@ define("LINCSV"     ,DATADIR.LINMAS.".csv");    //部門マスタ
 define("SALEITEMSCSV"    ,DATADIR.SALEITEMS.".csv");//アイテムデータ
 define("PAGECONFCSV",DATADIR.PAGECONF.".csv");  //ページごとの設定
 define("SALETYPECSV",DATADIR.SALETYPE.".csv");  //セールタイプ設定
+define("STORECSV"   ,DATADIR.STORE.".csv");     //会社情報
 //---------------------------------------------------//
 
 
@@ -94,6 +96,7 @@ define("TB_LINMAS"      ,TABLE_PREFIX.LINMAS);      //部門マスタ
 define("TB_SALEITEMS"   ,TABLE_PREFIX.SALEITEMS);   //アイテム
 define("TB_PAGECONF"    ,TABLE_PREFIX.PAGECONF);    //ページ設定
 define("TB_SALETYPE"    ,TABLE_PREFIX.SALETYPE);    //セールタイプ設定
+define("TB_STORE"       ,TABLE_PREFIX.STORE);       //会社情報
 
 //---------------------------------------------------//
 // DB テーブル列系定数
@@ -408,7 +411,37 @@ $TABLES=array(
                                                  ,"local"  =>"フラグ9"
                                                 )//flg9  
                                   )//TB_SALEITEMS
+              ,TB_STORE   => array(
+                               "id"    =>array( "type"   =>"int"
+                                               ,"null"   =>"not null"
+                                               ,"extra"  =>"auto"
+                                               ,"default"=>"0"
+                                               ,"primary"=>1
+                                               ,"local"  =>"番号"
+                                              )//id
 
+                            ,"colname" =>array( "type"   =>"varchar(255)"
+                                               ,"null"   =>"not null"
+                                               ,"extra"  =>""
+                                               ,"default"=>"''"
+                                               ,"primary"=>0
+                                               ,"local"  =>"列名"
+                                              )//colname 
+                            ,"jpnname" =>array( "type"   =>"varchar(255)"
+                                               ,"null"   =>"not null"
+                                               ,"extra"  =>""
+                                               ,"default"=>"''"
+                                               ,"primary"=>0
+                                               ,"local"  =>"日本語列名"
+                                              )//jpnname 
+                            ,"val"     =>array( "type"   =>"varchar(255)"
+                                               ,"null"   =>"not null"
+                                               ,"extra"  =>""
+                                               ,"default"=>"''"
+                                               ,"primary"=>0
+                                               ,"local"  =>"値"
+                                              )//val 
+                                  )//TB_STORE
             );//TABLES
 
 //---------------------------------------------------//
@@ -467,6 +500,11 @@ $CSVCOLUMNS=array( JANMAS   =>array(
                                       ,"flg8"
                                       ,"flg9"
                                    )//SALEITEMS
+                  ,STORE=>array(
+                                       "colname"
+                                      ,"jpnname"
+                                      ,"val"
+                                   )//STORE
                  );//CSVCOLUMNS
 //---------------------------------------------------//
 
