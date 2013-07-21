@@ -339,6 +339,46 @@ class ImportData extends db{
   }//catch
  }// public function setPageConf(){
 
+//---------------------------------------------------------//
+// 店舗情報を更新
+// 更新方法:該当データを全削除後、CSVデータを登録
+//---------------------------------------------------------//
+ public function setStore(){
+  $this->filename=STORE;
+  $this->tablename=TB_STORE;
+
+  //データゲット
+  $this->getData();
+  
+  try{
+   //トランザクション開始
+   $this->BeginTran();
+
+   //データ削除
+   $this->from=TB_STORE;
+   $this->where="id>0";
+   $this->delete();
+
+   //データ更新
+   foreach($this->items["data"] as $rownum=>$rowdata){
+    if (! $rowdata["status"]) continue;  //エラーデータを除く
+    foreach($rowdata as $col=>$val){
+     if($col=="status") continue;
+     //echo $col." ".$val."\n";
+     $this->updatecol[$col]=$val;
+    }//foreach
+    $this->from=TB_STORE;
+    $this->where="id=0";
+    $this->update();
+   }//foreach
+   $this->Commit();
+  }//try
+  catch(Exception $e){
+   $this->RollBack();
+   throw $e;
+  }//catch
+ }// public function setPageConf(){
+
 
 }//class IMPORTDATA extends db{
 
