@@ -10,13 +10,12 @@ class PAGE extends DB{
 
  function __construct(){
   parent::__construct();
-  $this->from=TB_PAGECONF;
  }//__construct
 
 //-------------------------------------------------------//
 // グループごとのページ詳細を返す                        //
 //-------------------------------------------------------//
- public function getGroup($flg0){
+ public function getGroup($group){
   $this->items=null;
   //attrをゲット
   $this->select ="attr";
@@ -33,11 +32,11 @@ class PAGE extends DB{
   $this->from =TB_PAGECONF." as t ";
   $this->from.="inner join (";
   $this->from.=" select pagename,val from ".TB_PAGECONF;
-  $this->from.=" where attr='flg0' and val='".$flg0."'";
+  $this->from.=" where attr='group' and val='".$group."'";
   $this->from.=" group by pagename,val) as t1 on";
   $this->from.=" t.pagename=t1.pagename";
   $this->group=" t.pagename";
-  $this->order=" case when t.attr='flg1' then t.val else 999999 end";
+  $this->order=" case when t.attr='page' then t.val else 999999 end";
   $this->getArray();
   $this->items=$this->ary;
  }// public function getGroup($flg0){
@@ -76,16 +75,12 @@ class PAGE extends DB{
   $this->getPage($base);
   $head=$this->items[0];
 
-  //ページ上部のリンクをゲット
-  $this->getGroup(2);
-  $topgrp=$this->items;
-
-  //ページ中央のリンクをゲット
+  //ページ上部のナビゲーションリンクをゲット
   $this->getGroup(1);
-  $centergrp=$this->items;
+  $topgrp=$this->items;
   
   $html =html::sethead($head);
-  $html.=html::setheader($base,$topgrp,$centergrp);
+  $html.=html::setheader($base,$topgrp);
 
   //タイトルに単品名を表示させるため、ここでは出力しない。
   //各ページにて表示するように仕様変更
