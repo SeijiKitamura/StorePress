@@ -3,3 +3,4 @@ php/server.conf.php
 log/
 img/
 js/
+*.swp
