@@ -1,23 +1,24 @@
 <?php
-//----------------------------------------------------------//
-//  html.class.php 
-//  html生成用クラス
-//----------------------------------------------------------//
-//メソッド一覧
-//----------------------------------------------------------//
-// setpagelink($data,$page)  ページリンク用(<ul>を含むhtmlを返す)
-// setfooter($page)          フッター用($pageは表示するページを代入)
-//----------------------------------------------------------//
 
-class html{
+require_once("dataset.class.php");
+class html extends dataset{
+ public $html;
+ public $div;
+ public $element;
+
+ function __construct(){
+  parent::__construct();
+ }//function __construct(){
+
 //----------------------------------------------------------//
-// head
+// head雛形
 //----------------------------------------------------------//
- private static function head(){
-  $html=<<<EOF
+ private  function head_tmp(){
+  $this->html=<<<EOF
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
    "http://www.w3.org/TR/html4/loose.dtd">
 <html lang="ja">
+<!--headstart-->
  <head>
   <meta http-equiv="Content-language" content="ja">
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
@@ -27,12 +28,16 @@ class html{
   <meta http-equiv="Content-Style-Type" content="text/css">
   <meta http-equiv="pragma" content="no-cache">
   <meta http-equiv="cache-control" content="no-cache">
-  <meta http-equiv="expires" content="__CACHEDATE__">
-  <title> __jcode__ __title__ | __CORPNAME__ </title>
+  <!--meta http-equiv="expires" content="__CACHEDATE__"-->
+  <!--titlestart-->
+  <title>
+    __title__ | __storename__ 
+  </title>
+  <!--titleend-->
   <meta name="description" content="__description__ __jcode__">
   <meta name="viewport" content="width=device-width,initial-scale=1.0,minimau-scale=1.0,maximum-scale=2,user-scalable=yes">
   <meta name="format-detection" content="telephone=no">
-  <link rel="icon" href="__FAV__" type="type/ico" sizes="16x16" /> 
+  <link rel="icon" href="__IMG____favcon__" type="type/ico" sizes="16x16" /> 
   <link rel="stylesheet" href="__CSS____css__" media="screen"/> 
   <link rel="stylesheet" href="__CSS__print.css" media="print"/> 
   <link rel="next" href="__next__" />
@@ -40,917 +45,356 @@ class html{
   
   
   <script type="text/javascript" src="__JQUERY__"></script>
-  <script>
-   (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){ (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o), m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m) })(window,document,'script','//www.google-analytics.com/analytics.js','ga'); ga('create', 'UA-40148125-1', 'kita-grp.co.jp'); ga('send', 'pageview'); 
-  </script>
-
+<!--headhtmlend-->
  </head>
+<!--headend-->
 
 EOF;
-  return $html;
- }//private static function head(){
+ }//private  function head(){
 
 //----------------------------------------------------------//
-// head用($dataは単一データとする）
+// body雛形
 //----------------------------------------------------------//
- public static function sethead($data){
-  $html=self::head();
-  foreach($data as $col=>$val){
-   $pattern="__".$col."__";
-   $replace=$val;
-   $html=str_replace($pattern,$val,$html);
-  }//foreach
-
-  //CSSディレクトリをセット
-  $pattern="__CSS__";
-  $val=CSS;//config.php
-  $html=str_replace($pattern,$val,$html);
-
-  //ファビコンをセット
-  $pattern="__FAV__";
-  $val=FAV;//config.php
-  $html=str_replace($pattern,$val,$html);
-
-  //Javascriptをセット
-  $pattern="__JQUERY__";
-  $val=JQ;//config.php
-  $html=str_replace($pattern,$val,$html);
-
-  //会社名をセット
-  $pattern="__CORPNAME__";
-  $val=CORPNAME;//config.php
-  $html=str_replace($pattern,$val,$html);
-
-  //キャッシュ有効日をセット
-  $pattern="__CACHEDATE__";
-  $val=gmdate("D,d M Y H:i:s",strtotime("1day"))." GMT";
-  $html=str_replace($pattern,$val,$html);
-
-  if(is_mobile()){
-   $pattern="/\.css/";
-   $replace=".smart.css";
-   $html=preg_replace($pattern,$replace,$html);
-  }
-  return $html;
- }//public static function sethead($page){
-
-//----------------------------------------------------------//
-// ヘッダー雛形
-//----------------------------------------------------------//
- private static function header_tmp(){
-  $html=<<<EOF
- <body>
-  <div id="fb-root"></div>
-  <script>
-   (function(d, s, id) {
-     var js, fjs = d.getElementsByTagName(s)[0];
-     if (d.getElementById(id)) return;
-     js = d.createElement(s); js.id = id;
-     js.src = "//connect.facebook.net/ja_JP/all.js#xfbml=1";
-     fjs.parentNode.insertBefore(js, fjs);
-    }(document, 'script', 'facebook-jssdk'));
-   </script>
-
-  <div id="wrapper">
-<!-- -------------- div header start ---------------------- -->
-   <div id="header">
-
-<!-- -------------- div topnavi start -------------------- -->
-    <div class="topnavi">
-    __TOPNAVI__
-    </div>
-<!-- -------------- div topnavi end   -------------------- -->
-    <div class='clr'></div>
-
-<!-- -------------- div corpinfo start -------------------- -->
-    <div class="corpinfo">
-     <!-- corpinfo -->
-    </div>
-<!-- -------------- div corpinfo end   -------------------- -->
-
-<!-- -------------- div logo   start ---------------------- -->
-    <div class="logo">
-     <a href="index.php">
-      <img src="__LOGO__" alt="__CORPNAME__">
-     </a>
-    </div>
-<!-- -------------- div logo   end   ---------------------- -->
-
-
-    <div class='clr'></div>
-   </div>
-<!-- -------------- div header end   ---------------------- -->
-EOF;
-  return $html;
- }//private static function header_tmp(){
-
- public static function otherservice(){
-  $html=<<<EOF
-  <ul class="group">
-   <li class='htitle'>各種サービスのご案内</li>
-   <li> ポイントカード(準備中) </li>
-   <li> <a href="haitatu.php">配達承り中 </a> </li>
-   <li> <a href="mailitem.php">メール会員募集中</a> </li>
-   <li> <a href="https://twitter.com/Super_Kitamura">twitter</a> </li>
-   <li> facebook(準備中) </li>
-  </ul>
-
-  <ul class="group">
-   <li class='htitle'>スーパーキタムラ</li>
-   <li>定休日: なし</li>
-   <li>営業時間: 9:30~22:00</li>
-   <li>電話: 03-3771-8284</li>
-   <li>住所: 大田区南馬込4-21-10</li>
-  </ul>
-  <ul class="group">
-   <li class='htitle'>グループリンク</li>
-   <li> <a href="http://www2.kita-grp.co.jp/modules/contents17/index.html">ゆたかゴルフ練習場 </a> </li>
-   <li> <a href="http://k-jisho.jp/">キタムラ地所</a> </li>
-
-  </ul>
-EOF;
-  return $html;
- }
-
-//----------------------------------------------------------//
-// ヘッダー出力
-//----------------------------------------------------------//
- public static function setheader($base,$topgrp){
-  $html=self::header_tmp();
-  //ロゴをセット
-  $pattern="__LOGO__";
-  $replace=LOGO;
-  $html=str_replace($pattern,$replace,$html);
-
-  //ロゴメッセージをセット
-  $pattern="__CORPNAME__";
-  $replace=CORPNAME;
-  $html=str_replace($pattern,$replace,$html);
-
-  //トップグループをセット
-  $pattern="__TOPNAVI__";
-  $replace=self::setpagelink($topgrp,$base);
-  $html=str_replace($pattern,$replace,$html);
-
-//  //センターグループをセット
-//  $pattern="__TIMESALE__";
-//  $replace=self::setpagelink($centergrp,$base);
-//  $html=str_replace($pattern,$replace,$html);
-
-  return $html;
- }
-
-//----------------------------------------------------------//
-// フッター
-//----------------------------------------------------------//
-private static function footer(){
- $html=<<<EOF
-   <div class="clr"></div>
-   <div id="footer">
-    <!-- div class="corp">__CORP__</div -->
-    <div class="footerlink">__TIMESALE__</div>
-   </div>
-   <div class="clr"></div>
-  </div>
- </body>
+ private  function body_tmp(){
+  $this->html.=<<<EOF
+<!--bodystart-->
+<body>
+<!--wrapperstart-->
+<div id="wrapper">
+<!--wrapperhtmlend-->
+</div>
+<!--wrapperend-->
+</body>
+<!--bodyend-->
 </html>
 EOF;
- return $html;
-}
+ }//private  function body_tmp(){
 
 //----------------------------------------------------------//
-// フッター用
+// header雛形
 //----------------------------------------------------------//
- public static function setfooter($base,$topgrp,$centergrp){
-  $html=self::footer();
-  $html=str_replace("__CORP__",$GLOBALS["KAISYAMEI"],$html);
-  $replace =self::setpagelink($centergrp,$base);
-  $replace.=self::setpagelink($topgrp,$base);
-  $html=str_replace("__TIMESALE__",$replace,$html);
-  return $html;
- }
-
-//----------------------------------------------------------//
-// ページリンク用(<ul>を含むhtmlを返す)
-//----------------------------------------------------------//
- public static function setpagelink($data,$page=null){
-  if (! is_array($data)) return false;
-  $html ="<ul>\n";
-  foreach($data as $rownum=>$rowdata){
-   $html.="<li>";
-
-   if($rowdata["url"] && $rowdata["url"]!=$page){
-    $html.="<a href='".$rowdata["url"]."'>";
-   }//if
-
-   $html.=$rowdata["title"];
-
-   if($rowdata["url"] && $rowdata["url"]!=$page){
-    $html.="</a>";
-   }//if
-
-   $html.="</li>\n";
-  }//foreach
-  $html.="</ul>\n";
-  return $html;
- }//public static function setlink($data,$page=null){
-//----------------------------------------------------------//
-// グループ用
-//----------------------------------------------------------//
- public static function group(){
-$html=<<<EOF
- <li>
-  <a href='__LINK__' target='_blank'>
-   __GROUP__
-  </a>
- </li>
-EOF;
-  return $html;
- }// public static function group(){
-
-//----------------------------------------------------------//
-// グループ生成
-//----------------------------------------------------------//
- public static function setgroup($data,$link,$group,$groupname){
-  $html="";
-  foreach($data as $rownum=>$rowdata){
-   $n=$rowdata[$groupname]."(".$rowdata["cnt"].")";
-   $base=self::group();
-   $base=str_replace("__LINK__",$link.$rowdata[$group],$base);
-   $base=str_replace("__GROUP__",$n,$base);
-   $html.=$base;
-  }//foreach
-  $html="<ul class='group'>\n".$html."</ul>\n";
-  return $html;
- }//public static function setgroup(){
-
-//----------------------------------------------------------//
-// 単品一覧用
-//----------------------------------------------------------//
- private static function item(){
-$html=<<<EOF
-<div class='item'>
- <div class='imgdiv'>
-  <div class='saleday'>__SALEDAY__</div>
-   <a href='__LINK__' target="">
-    <img src='__IMGLINK__' alt='__MAKER__ __SNAME__ __JCODE__ ' title='__MAKER__ __SNAME__ __IMGJCODE__'>
-   </a>
- </div> 
- <div class='datadiv'>
-  <div class='saletype'>__SALETYPE__</div>
-  <h3 class='sname'>   
-   <a href='__LINK__' target="">
-    __MAKER__ __SNAME__
-   </a>
-  </h3>
-
-  <div class='tani'>__TANI__&nbsp;</div>
-  <div class='price'>__PRICE__<span>__EN__</span></div>
-  <div class='clr'></div>
-  <div class='notice'>__NOTICE__&nbsp;</div>
-  <div class='jcode'>__JCODE__</div>
-  <div class='lastsale'>__LASTSALE__&nbsp;</div>
- </div>
+ protected function header_tmp(){
+  $this->html.=<<<EOF
+<!--headerstart-->
+<div id="header">
+<!--headerhtmlend-->
 </div>
+<!--headerend-->
 EOF;
-
-  return $html;
- }//public static function item(){
+ }//private  function header_tmp(){
 
 //----------------------------------------------------------//
-// グループ一覧生成
+// main雛形
 //----------------------------------------------------------//
- public static function setgroupitem($data){
-  $html="";
-  if(! is_array($data)) return false;
-  foreach ($data as $rownum=>$rowdata){
-
-   $base=self::item();
-
-   //リンク作成
-   $url ="?lincode=".$rowdata["lincode"]."&clscode=".$rowdata["clscode"];
-   $base=str_replace("__LINK__",$url,$base);
-
-   //SALEDAY非表示
-   $base=str_replace("__SALEDAY__","",$base);
-
-   //画像非表示
-   $img="./img/".$rowdata["lincode"].".jpg";
-   if(! file_exists($img)){
-    $pattern="/<img.*/";
-    $base=preg_replace($pattern,"",$base);
-   }//if
-   $base=str_replace("__IMGLINK__",$img,$base);
-
-   //saletype 非表示
-   $pattern="/<div class='saletype'>.*<\/div>/";
-   $base=preg_replace($pattern,"",$base);
-
-   //メーカー非表示
-   $base=str_replace("__MAKER__",$rowdata["maker"],$base);
-
-   //SNAMEにグループ名をセット
-   $sname=$rowdata["linname"]."(".$rowdata["cnt"].")";
-   $base=str_replace("__SNAME__",$sname,$base);
-
-   //単位を非表示
-   $base=str_replace("__TANI__",$rowdata["tani"],$base);
-
-   //売価を非表示
-   $pattern="/<div class='price'>.*<\/div>/";
-   $base=preg_replace($pattern,"<div class='price'></div>",$base);
-   $base=str_replace("__EN__","",$base);
-
-   //コメント非表示
-   $base=str_replace("__NOTICE__",$rowdata["notice"],$base);
-   
-   //JANコードを非表示
-   $base=str_replace("__JCODE__","",$base);
-
-   //更新日を非表示
-   $base=str_replace("__LASTSALE__","",$base);
-
-   $html.=$base;
-  }//foreach ($data as $rownum=>$rowdata){
-
-  $html.="<div class='clr'></div>\n";
-  return $html;
-
- }// public static function setgroupitem($grplist){
-
-//----------------------------------------------------------//
-// 単品一覧生成
-//----------------------------------------------------------//
- public static function setitem($data,$jcode=null){
-  $html="";
-  if(! is_array($data)) return false;
-  foreach ($data as $rownum=>$rowdata){
-   $base=self::item();
-
-   //リンク作成
-   $url ="?lincode=".$rowdata["lincode"]."&clscode=".$rowdata["clscode"];
-   $url.="&jcode=".$rowdata["jcode"]."&page=".$rowdata["page"];
-   $base=str_replace("__LINK__",$url,$base);
-
-   //リスト中の商品が単品と同じならリンクを消去
-   if($rowdata["jcode"]==$jcode){
-    $pattern="/<a.*>/";
-    $base=preg_replace($pattern,"",$base);
-
-    $pattern="/<\/a>/";
-    $base=preg_replace($pattern,"",$base);
-   }//if
-
-   //画像がなければ非表示
-   $img="./img/".$rowdata["jcode"].".jpg";
-   if(! file_exists($img)){
-    $pattern="/<img.*/";
-    $base=preg_replace($pattern,"",$base);
-   }//if
-   $base=str_replace("__IMGLINK__",$img,$base);
-   $base=str_replace("__IMGJCODE__",$rowdata["jcode"],$base);
-
-   $base=str_replace("__SALEDAY__","",$base);
-   if(! preg_match("/^[0-9]+$/",$rowdata["saletype"])){
-    $base=str_replace("saletype","saletype_blank",$base);
-    $base=str_replace("__SALETYPE__","",$base);
-   }//if
-   if(is_numeric($rowdata["saletype"])){
-    $base=str_replace("__SALETYPE__",$GLOBALS["SALETYPE"][$rowdata["saletype"]],$base);
-   }
-   else{
-    $pattern="/<div class='saletype'>.*<\/div>/";
-    $base=preg_replace($pattern,"",$base);
-   }
-   $base=str_replace("__MAKER__",$rowdata["maker"],$base);
-   $base=str_replace("__SNAME__",$rowdata["sname"],$base);
-   $base=str_replace("__TANI__",$rowdata["tani"],$base);
-   if($rowdata["price"]==0){
-    $pattern="/<div class='price'>.*<\/div>/";
-    $base=preg_replace($pattern,"<div class='price'></div>",$base);
-   }
-   $pattern="/(^[Pp]?[0-9]+|半額)(割引|倍)?/";
-   preg_match($pattern,$rowdata["price"],$match);
-   $base=str_replace("__PRICE__",$match[1],$base);
-   if($match[2]){
-    $base=str_replace("__EN__",$match[2],$base);
-   }
-   else{
-    if(preg_match("/^[0-9]+$/",$match[1])){
-     $base=str_replace("__EN__","円",$base);
-    }
-    else{
-     $base=str_replace("__EN__","",$base);
-    }
-   }
-   $base=str_replace("__NOTICE__",$rowdata["notice"],$base);
-   $base=str_replace("__JCODE__","",$base);
-   $lastsale=date("n月j日",strtotime($rowdata["lastsale"]))."__LASTSALE__";
-   $base=str_replace("__LASTSALE__",$lastsale,$base);
-   $html.=$base;
-  }//foreach
-  
-  $html.="<div class='clr'></div>\n";
-  return $html;
- }//public static function setitem($data){
-
- public static function setListGoyoyaku($data){
-  $html="";
-  $html="<div class='goyoyaku'>\n";
-  if (! is_array($data)) return false;
-  foreach($data as $rownum=>$rowdata){
-   $base=self::item();
-   //リンク作成
-   $url ="?grpcode=".$rowdata["grpcode"];
-   $base=str_replace("__LINK__",$url,$base);
-
-   //画像がなければ非表示
-   $img="./img/".$rowdata["jcode"].".jpg";
-   if(! file_exists($img)){
-    $pattern="/<img.*/";
-    $base=preg_replace($pattern,"",$base);
-   }//if
-   $base=str_replace("__IMGLINK__",$img,$base);
-
-   $base=str_replace("__SALEDAY__","",$base);
-   if(! preg_match("/^[0-9]+$/",$rowdata["saletype"])){
-    $base=str_replace("saletype","saletype_blank",$base);
-    $base=str_replace("__SALETYPE__","",$base);
-   }//if
-   if(is_numeric($rowdata["saletype"])){
-    $base=str_replace("__SALETYPE__",$GLOBALS["SALETYPE"][$rowdata["saletype"]],$base);
-   }
-   else{
-    $pattern="/<div class='saletype'>.*<\/div>/";
-    $base=preg_replace($pattern,"",$base);
-   }
-   $base=str_replace("__IMGJCODE__",$rowdata["jcode"],$base);
-   $base=str_replace("__MAKER__","",$base);
-   $base=str_replace("__SNAME__",$rowdata["grpname"],$base);
-   $base=str_replace("__TANI__","",$base);
-   $base=str_replace("__EN__","",$base);
-   $base=str_replace("__NOTICE__","",$base);
-   $base=str_replace("__JCODE__","",$base);
-   $base=str_replace("__LASTSALE__","",$base);
-
-   $pattern="/<div class='saletype_blank'>.*<\/div>/";
-   $base=preg_replace($pattern,"",$base);
-   $pattern="/<div class='tani'>.*<\/div>/";
-   $base=preg_replace($pattern,"",$base);
-   $pattern="/<div class='price'>.*<\/div>/";
-   $base=preg_replace($pattern,"",$base);
-   $pattern="/<div class='notice'>.*<\/div>/";
-   $base=preg_replace($pattern,"",$base);
-   $pattern="/<div class='jcode'>.*<\/div>/";
-   $base=preg_replace($pattern,"",$base);
-   $pattern="/<div class='lastsale'>.*<\/div>/";
-   $base=preg_replace($pattern,"",$base);
-
-   $html.=$base;
-  }//foreach
-  $html.="<div class='clr'></div>\n";
-  $html.="</div>\n";
-  return $html;
- }
-
- public static function setitemGoyoyaku($data,$jcode){
-  $html="";
-  $html="<div class='goyoyaku'>\n";
-  if (! is_array($data)) return false;
-  foreach ($data as $rownum=>$rowdata){
-   $base=self::item();
-
-   //リンク作成
-   $url ="?grpcode=".$rowdata["grpcode"];
-   $url.="&jcode=".$rowdata["jcode"];
-   $base=str_replace("__LINK__",$url,$base);
-
-   //リスト中の商品が単品と同じならリンクを消去
-   if($rowdata["jcode"]==$jcode){
-    $pattern="/<a.*>/";
-    $base=preg_replace($pattern,"",$base);
-
-    $pattern="/<\/a>/";
-    $base=preg_replace($pattern,"",$base);
-   }//if
-
-   //画像がなければ非表示
-   $img="./img/".$rowdata["jcode"].".jpg";
-   if(! file_exists($img)){
-    $pattern="/<img.*/";
-    $base=preg_replace($pattern,"",$base);
-   }//if
-   $base=str_replace("__IMGLINK__",$img,$base);
-
-   $base=str_replace("__SALEDAY__","",$base);
-   if(! preg_match("/^[0-9]+$/",$rowdata["saletype"])){
-    $base=str_replace("saletype","saletype_blank",$base);
-    $base=str_replace("__SALETYPE__","",$base);
-   }//if
-   if(is_numeric($rowdata["saletype"])){
-    $base=str_replace("__SALETYPE__",$GLOBALS["SALETYPE"][$rowdata["saletype"]],$base);
-   }
-   else{
-    $pattern="/<div class='saletype'>.*<\/div>/";
-    $base=preg_replace($pattern,"",$base);
-   }
-   $base=str_replace("__MAKER__",$rowdata["maker"],$base);
-   $base=str_replace("__SNAME__",$rowdata["sname"],$base);
-   $base=str_replace("__TANI__",$rowdata["tani"],$base);
-   if($rowdata["price"]==0){
-    $pattern="/<div class='price'>.*<\/div>/";
-    $base=preg_replace($pattern,"",$base);
-   }
-   $pattern="/(^[Pp]?[0-9]+|半額)(割引|倍)?/";
-   preg_match($pattern,$rowdata["price"],$match);
-   $base=str_replace("__PRICE__",$match[1],$base);
-   if($match[2]){
-    $base=str_replace("__EN__",$match[2],$base);
-   }
-   else{
-    if(preg_match("/^[0-9]+$/",$match[1])){
-     $base=str_replace("__EN__","円",$base);
-    }
-    else{
-     $base=str_replace("__EN__","",$base);
-    }
-   }
-   $base=str_replace("__NOTICE__",$rowdata["notice"],$base);
-   $base=str_replace("__JCODE__","",$base);
-   $base=str_replace("__LASTSALE__",$rowdata["lastsale"],$base);
-   $html.=$base;
-  }//foreach
-  
-  $html.="<div class='clr'></div>\n";
-  $html.="</div>\n";
-  return $html;
- }//public static function setitemGoyoyaku($data){
-
-
-//----------------------------------------------------------//
-// 単品用
-//----------------------------------------------------------//
- private static function tanpin(){
-$html=<<<EOF
-<div class='tanpin'>
- <div class='imgdiv'>
-  <img src='__IMGLINK__' alt='__MAKER__ __SNAME__ __JCODE__ ' title='__MAKER__ __SNAME__ __JCODE__'>
- </div> 
- <div class='datadiv'>
-  <div class='saletype'>__SALETYPE__</div>
-  <h3 class='sname'>__MAKER__ __SNAME__</h3>
-  <div class='tani' >__TANI__&nbsp;</div>
-  <div class='price'>__PRICE__<span>__EN__</span></div>
-  <div class='clr'></div>
-  <div class='notice'>__NOTICE__&nbsp;</div>
-  <div class='jcode'>__JCODE__</div>
-  <div class='lastsale'>__LASTSALE__&nbsp;</div>
-  <div class='social'><!--URL--></div>
- </div>
+ private  function main_tmp(){
+  $this->html.=<<<EOF
+<!--mainstart-->
+<div id="main">
+<!--mainhtmlend-->
 </div>
-<div class='clr'></div>
+<!--mainend-->
 EOF;
-
-  return $html;
- }//private static function tanpin(){
-//----------------------------------------------------------//
-// 単品一覧生成
-//----------------------------------------------------------//
- public static function settanpin($data){
-  $html="";
-  foreach ($data as $rownum=>$rowdata){
-   $base=self::tanpin();
- 
-   //画像がなければ非表示
-   $img="./img/".$rowdata["jcode"].".jpg";
-   if(! file_exists($img)){
-    $pattern="/<img.*/";
-    $base=preg_replace($pattern,"",$base);
-   }//if
-   $base=str_replace("__IMGLINK__",$img,$base);
-   $base=str_replace("__SALEDAY__","",$base);
-   $base=str_replace("__MAKER__",$rowdata["maker"],$base);
-   $base=str_replace("__SNAME__",$rowdata["sname"],$base);
-   $base=str_replace("__TANI__",$rowdata["tani"],$base);
-   if($rowdata["price"]==0){
-    $pattern="/<div class='price'>.*<\/div>/";
-    $base=preg_replace($pattern,"",$base);
-   }
-   $pattern="/(^[Pp]?[0-9]+|半額)(割引|倍)?/";
-   preg_match($pattern,$rowdata["price"],$match);
-   $base=str_replace("__PRICE__",$match[1],$base);
-   if($match[2]){
-    $base=str_replace("__EN__",$match[2],$base);
-   }
-   else{
-    if(preg_match("/^[0-9]+$/",$match[1])){
-     $base=str_replace("__EN__","円",$base);
-    }
-    else{
-     $base=str_replace("__EN__","",$base);
-    }
-   }
-   if(is_numeric($rowdata["saletype"])){
-    $base=str_replace("__SALETYPE__",$GLOBALS["SALETYPE"][$rowdata["saletype"]],$base);
-   }
-   else{
-    $pattern="/<div class='saletype'>.*<\/div>/";
-    $base=preg_replace($pattern,"",$base);
-
-   }
-   $base=str_replace("__JCODE__","JAN:".$rowdata["jcode"],$base);
-   $base=str_replace("__NOTICE__",$rowdata["notice"],$base);
-   if(! $rowdata["sday"] && ! $rowdata["eday"]){
-    $base=str_replace("__LASTSALE__",$rowdata["lastsale"],$base);
-   }//if
-   else{
-    if($rowdata["sday"]==$rowdata["eday"]){
-     $kikan=date("m月d日",strtotime($rowdata["sday"]))."限り";
-    }//if
-    else{
-     $kikan=date("m月d日",strtotime($rowdata["sday"]))."から".date("m月d日",strtotime($rowdata["eday"]))."まで";
-    }//else
-    $base=str_replace("__LASTSALE__",$kikan,$base);
-   }//else
-   $html.=$base;
-  }//foreach
-  return $html;
-
- }//public static function settanpin($data){
+ }//private  function main_tmp(){
 
 //----------------------------------------------------------//
-// カレンダー用
+// leftside雛形
 //----------------------------------------------------------//
- private static function calendar(){
-  $html="";
-  $html=<<<EOF
-<div class='calitem'>
- <div class='saleday'>__SALEDAY__</div>
- <div class='datadiv'>
-  <h3 class='sname'>
-   <a href='__LINK__' target="">
-    __MAKER__ __SNAME__
-   </a>
-  </h3>
-  <div class='tani' >__TANI__&nbsp;</div>
-  <div class='price'>__PRICE__<span>__EN__</span></div>
-  <div class='notice'>__NOTICE__&nbsp;</div>
- </div>
+ private  function leftside_tmp(){
+  $this->html.=<<<EOF
+<!--leftsidestart-->
+<div id="leftside">
+<!--leftsidehtmlend-->
 </div>
+<!--leftsideend-->
 EOF;
-  return $html;
- }//private static function calendar(){
+ }//private  function leftside_tmp(){
 
 //----------------------------------------------------------//
-// カレンダー用
+// rightside雛形
 //----------------------------------------------------------//
- public static function setcalendar($data){
-  $youbi=array("日","月","火","水","木","金","土");
+ private  function rightside_tmp(){
+  $this->html.=<<<EOF
+<!--rightsidestart-->
+<div id="rightside">
+<!--rightsidehtmlend-->
+</div>
+<!--rightsideend-->
+EOF;
+ }//private  function rightside_tmp(){
 
-  //最初の日付
-  $d=strtotime($data[0]["saleday"]);
+//----------------------------------------------------------//
+// footerside雛形
+//----------------------------------------------------------//
+ private  function footer_tmp(){
+  $this->html.=<<<EOF
+<!--footerstart-->
+<div id="footer">
+<!--footerhtmlend-->
+</div>
+<!--footerend-->
+EOF;
+ }//private  function footer_tmp(){
 
-  //開始日をセット(前月の最終日曜日)
-  $s=mktime(0,0,0,date("m",$d),1,date("Y",$d));
-  $y=date("w",$s);
-  $s=$s-($y*60*60*24);
+//----------------------------------------------------------//
+// div雛形
+//----------------------------------------------------------//
+ private  function div_tmp(){
+  $this->div=<<<EOF
+<!--elementnamestart-->
+<div elementtype "elementname">
+<!--elementnamehtmlend-->
+</div>
+<!--elementnameend-->
+EOF;
+ }//private  function div_tmp(){
+
+//----------------------------------------------------------//
+// ul雛形(ulにはid,classを指定できない)
+//----------------------------------------------------------//
+ private  function ul_tmp(){
+  $this->element=<<<EOF
+<!--ulstart-->
+<ul>
+ <!--liend-->
+</ul>
+<!--ulend-->
+EOF;
+ }//private  function ul_tmp(){
+
+//----------------------------------------------------------//
+// menu雛形(id,classを指定できない)
+//----------------------------------------------------------//
+ private function bigicon_tmp(){
+  $this->element=<<<EOF
+   <div class="bigicon">
+    <a href="<!--url-->">
+     <h3><!--flg9--></h3>
+     <span class="subtitle"><!--flg3--></span>
+     <div class="imgdiv">
+      <img src="__TANPINIMG__" alt="<!--maker--><!--sname-->" title="<!--maker--><!--sname-->" >
+     </div>
+     <div class="tanpindiv">
+      <span class="maker"><!--maker--></span>
+      <span class="sname"><!--sname--></span>
+      <span class="tani"><!--tani--></span>
+      <span class="price"><!--price--></span>
+      <span class="yen"><!--yen--></span>
+      <span class="notice"><!--notice--></span>
+      <span class="description"><!--description--></span>
+     </div>
+    </a>
+   </div>
+EOF;
+ }// private function bigmenu_tmp(){
+//----------------------------------------------------------//
+// img雛形(imgにはid,classを指定できない)
+//----------------------------------------------------------//
+ public function create_img($src,$alt=null,$title=null){
+  $this->element=<<<EOF
+<!--imgstart-->
+<img src="{$src}" alt="{$alt}" title="{$title}">
+<!--imgend-->
+EOF;
+ }//private  function create_img(){
+
+//----------------------------------------------------------//
+// a雛形(aにはid,classを指定できない)
+//----------------------------------------------------------//
+ public function create_a($url,$val=null){
+  $this->element=<<<EOF
+<!--astart-->
+<a href="{$url}">
+{$val}
+<!--ahtmlend-->
+</a>
+<!--aend-->
+EOF;
+ }//private  function create_a(){
+
+//----------------------------------------------------------//
+// span雛形(aにはid,classを指定できない)
+//----------------------------------------------------------//
+ public function create_span($val){
+  $this->element=<<<EOF
+<!--spanstart-->
+<span>
+{$val}
+<!--spanhtmlend-->
+</span>
+<!--spanend-->
+EOF;
+ }//private  function create_a(){
+
+
+
+//----------------------------------------------------------//
+// headを追加
+//----------------------------------------------------------//
+ public function sethead($data=null){
+  $this->head_tmp();
+  $this->body_tmp();
+ }//public function sethead($elementtype=null,$elementname=null){
+
+//----------------------------------------------------------//
+// div生成
+//----------------------------------------------------------//
+ public function creatediv($elementtype=null,$elementname=null){
+  $this->div_tmp();
+  if($elementtype==="id"){
+   $this->div=preg_replace("/elementtype/","id=",$this->div);
+  }//if
+
+  if($elementtype==="class"){
+   $this->div=preg_replace("/elementtype/","class=",$this->div);
+  }//if
+
+  if(! $elementtype){
+   $this->div=preg_replace("/elementtype/","",$this->div);
+   $this->div=preg_replace("/elementname/","",$this->div);
+  }//if
+
+  if($elementname){
+   $this->div=preg_replace("/elementname/",$elementname,$this->div);
+  }//if
+
+  if(! $elementname){
+   $this->div=preg_replace("/elementtype/","",$this->div);
+   $this->div=preg_replace("/elementname/","",$this->div);
+  }//if
+ }//public function create($elementtype=null,$elementname=null){
+
+//----------------------------------------------------------//
+// divをhtmlの最後尾へ追加
+//----------------------------------------------------------//
+ public function addhtml($elementname){
+  $pattern="<!--".$elementname."end-->";
+  $this->html=preg_replace("/".$pattern."/",$this->div.$pattern,$this->html);
+  $this->div="";
+ }//public function add($element){
+
+//----------------------------------------------------------//
+// html内のdivを削除
+//----------------------------------------------------------//
+ public function delhtml($elementname){
+  $pattern="/<!--".$elementname."start-->.*<!--".$elementname."end-->/s";
+  $this->html=preg_replace($pattern,"",$this->html);
+  $this->div="";
+ }//public function del($element){
+
+
+//----------------------------------------------------------//
+// html内へdivを追加
+//----------------------------------------------------------//
+ public function appendhtml($elementname){
+  $pattern="<!--".$elementname."htmlend-->";
+  $this->html=preg_replace("/".$pattern."/",$this->div.$pattern,$this->html);
+  $this->div="";
+ }//public function add($element){
+
+
+//----------------------------------------------------------//
+// elementをdivへ追加(削除はできないのでdivごと消してください)
+//----------------------------------------------------------//
+ public function append($elementname){
+  $pattern="<!--".$elementname."htmlend-->";
+  $this->div=preg_replace("/".$pattern."/",$this->element.$pattern,$this->div);
+  $this->element="";
+ }//public function add($element){
+
+//----------------------------------------------------------//
+// elementに値を追加
+//----------------------------------------------------------//
+ public function appendelement($elementname,$val){
+  $pattern="<!--".$elementname."htmlend-->";
+  $this->element=preg_replace("/".$pattern."/",$val.$pattern,$this->element);
+ }//public function appendelement($element){
+
+//----------------------------------------------------------//
+// elementに値を追加
+//----------------------------------------------------------//
+ public function addelement($elementname,$val){
+  $pattern="<!--".$elementname."end-->";
+  $this->element=preg_replace("/".$pattern."/",$val.$pattern,$this->element);
+ }//public function addelement($element,$val){
+
+
+//----------------------------------------------------------//
+// ul生成
+// $data=array("url"=>ページURL,
+//             "val"=>表示させる値
+//            )
+// $me="現在のページURL"
+//----------------------------------------------------------//
+ public function getul($data,$me=null){
+  $li="";
+  foreach($data as $rows=>$row){
+   $li.="<li>";
+   if($row["url"]!==$me) $li.="<a href='".$row["url"]."'>";
+   $li.=$row["val"];
+   if($row["url"]!==$me) $li.="</a>";
+   $li.="</li>";
+  }//foreach
+  $this->ul_tmp();
+  $pattern="<!--liend-->";
+  $this->element=preg_replace("/".$pattern."/",$li.$pattern,$this->element);
+ }//public function getul(){
+
+//----------------------------------------------------------//
+// headをセット
+//----------------------------------------------------------//
+ public function gethead($pagename){
+  //店舗情報セット
+  $this->getStoreInfo();
+  $store=$this->items["data"];
+  if(! $store) throw new exception ("店舗情報がありません");
+  //print_r($store);
+
+  //ページ情報をゲット
+  $this->getPage($pagename);
+  $page=$this->items["data"];
+  if(! $page) throw new exception ("ページ情報がありません");
+  //print_r($page);
   
-  //終了日をセット(翌月の最初土曜日)
-  $e=mktime(0,0,0,date("m",$d)+1,0,date("Y",$d));
-  $y=date("w",$e);
-  $e=$e+(6-$y)*60*60*24;
+  //ヘッダーをセット
+  $this->head_tmp();
+  
+  //店舗情報を反映
+  foreach($store as $rows=>$row){
+   $pattern="__".$row["colname"]."__";
+   $this->html=str_replace($pattern,$row["val"],$this->html);
+  }//foreach
 
-  $html="<div class='calendar'>";
-  //曜日をセット
-  for($i=0;$i<count($youbi);$i++){
-   $html.="<div class='youbi ";
-   if($i==(count($youbi)-1)) $html.=" colend";
-   $html.="'>".$youbi[$i]."</div>\n";
-  }//for
-  $html.="<div class='clr'></div>";
-
-  //echo "start".date("Y-m-d",$s)." end ".date("Y-m-d",$e);
-
-  //開始日から終了日まで繰り返し
-  $daycnt=1;
-  for($i=$s;$i<=$e;$i=$i+60*60*24){
-   $css="calitem ";
-   //枠表示
-   $base=self::calendar();
-   if(date("w",$i)==6) $css.="colend ";
-   if($daycnt / 7>4) $css.=" rowend";
-   $base=str_replace("calitem",$css,$base);
-
-   //日付表示
-   $base=str_replace("__SALEDAY__",date("j",$i),$base);
-
-   $flg=0;
-   //データ表示
-   foreach($data as $rownum=>$rowdata){
-    if($i==strtotime($rowdata["saleday"])){
-     $url ="calendar.php?saleday=".$rowdata["saleday"];
-     $base=str_replace("__LINK__",$url,$base);
-
-     //画像がなければ非表示
-     $img="./img/".$rowdata["jcode"].".jpg";
-     if(! file_exists($img)){
-      $pattern="/<img.*/";
-      $base=preg_replace($pattern,"",$base);
-     }//if
-     $base=str_replace("__IMGLINK__",$img,$base);
-     $base=str_replace("__MAKER__",$rowdata["maker"],$base);
-     $base=str_replace("__SNAME__",$rowdata["sname"],$base);
-     $base=str_replace("__TANI__",$rowdata["tani"],$base);
-     $pattern="/(^[Pp]?[0-9]+|半額)(割引|倍)?/";
-     preg_match($pattern,$rowdata["price"],$match);
-     $base=str_replace("__PRICE__",$match[1],$base);
-     if($match[2]){
-      $base=str_replace("__EN__",$match[2],$base);
-     }
-     else{
-      if(preg_match("/^[0-9]+$/",$match[1])){
-       $base=str_replace("__EN__","円",$base);
-      }
-      else{
-       $base=str_replace("__EN__","",$base);
-      }
-     }
-     $base=str_replace("__NOTICE__",$rowdata["notice"],$base);
-
-     $flg=1;
-     break;
-    }//if
+  //ページ情報を反映
+  foreach($page as $rows=>$row){
+   foreach($row as $col=>$val){
+    $pattern="__".$col."__";
+    $this->html=str_replace($pattern,$val,$this->html);
    }//foreach
-   if(! $flg){
-    $pattern="/<img.*/";
-    $base=preg_replace($pattern,"",$base);
-    $base=str_replace("__LINK__","",$base);
-    $base=str_replace("__MAKER__","",$base);
-    $base=str_replace("__SNAME__","",$base);
-    $base=str_replace("__TANI__","",$base);
-    $base=str_replace("__PRICE__","",$base);
-    $base=str_replace("__EN__","",$base);
-    $base=str_replace("__NOTICE__","",$base);
-   }//if
-   $base=str_replace("__JCODE__","",$base);
-   $base=str_replace("__LASTSALE__","",$base);
-   $html.=$base;
-   if(date("w",$i)==6) $html.="<div class='clr'></div>\n";
-   $daycnt++;
-  }//for
-  $html.="</div>\n";//<div class='calendar'>
-
-  return $html;
- }//private static function calendar(){
-
-//----------------------------------------------------------//
-// チラシアイテム一覧用
-//----------------------------------------------------------//
- public static function setitemTirasi($data,$jcode=null){
-  $html="";
-  $sday=0;//開始日
-  $eday=0;//終了日
-  $flg1="";//サブタイトル
-
-  $html="<div class='tirasiitem'>\n";
-
-  if(! is_array($data)) return false;
-  $datacnt=0;
-  $titlecnt=0;
-  foreach($data as $rownum=>$rowdata){
-   //開始日、終了日が変更なら日付表示
-   if($sday!=strtotime($rowdata["sday"]) || $eday!=strtotime($rowdata["eday"])){
-    $kaisi=date("n月j日",strtotime($rowdata["sday"]));
-    $owari=date("n月j日",strtotime($rowdata["eday"]));
-    if($kaisi==$owari) $kikan=$kaisi."限り";
-    else $kikan=$kaisi."から".$owari."まで";
-    //$html.="<div class='clr'></div>\n";
-    //$html.="<h4>".$kikan."</h4>\n";
-   }//if
-
-   //サブタイトル変更なら表示
-   if($flg1!=$rowdata["flg1"]){
-    $title=$rowdata["flg1"];
-    //$html.="<div class='clr'></div>\n";
-    //$html.="<h3>".$title."</h3>\n";
-   }//if
-
-   if($sday!=strtotime($rowdata["sday"]) || $eday!=strtotime($rowdata["eday"]) || $flg1!=$rowdata["flg1"]){
-    $titlecnt++;
-    if($titlecnt > PAGETITLE){ //config.php(PAGETITLEごとに改ページ)
-     $html.="<div class='pageview'>\n";
-     $html.="<pre>".$GLOBALS["MENSEKI"]."</pre>\n";
-     $html.="</div>\n";
-     $html.="<div class='pagebreak'></div>\n";
-     $html.="<div class='pageview'>\n";
-     $html.="<div class='clr'></div>\n";
-     $html.="<img src='".IMG.LOGONAME."'>\n";
-     //$html.="<h3>".$kikan." ".$title."</h3>\n";
-     $html.="</div>\n";
-     $datacnt=1;
-     $titlecnt=1;
-    }
-    $html.="<div class='clr'></div>\n";
-    //$html.="<h3>".$kikan." ".$title."</h3>\n";
-    $html.="<br><hr><br>";
-    $html.="<h3>".$title." ".$kikan."</h3>\n";
-   }
-   //アイテム表示
-   $base=self::item();
-
-   //画像がなければ非表示
-   $img="./img/".$rowdata["jcode"].".jpg";
-   if(! file_exists($img)){
-    $pattern="/<img.*/";
-    $base=preg_replace($pattern,"",$base);
-   }//if
-   $base=str_replace("__IMGLINK__",$img,$base);
-   //単品用URLをセット
-   $url ="?lincode=".$rowdata["lincode"]."&clscode=".$rowdata["clscode"];
-   $url.="&jcode=".$rowdata["jcode"]."&saleday=".$rowdata["sday"];
-   $base=str_replace("__LINK__",$url,$base);
-
-   //リスト中の商品が単品と同じならリンクを消去
-   if($rowdata["jcode"]==$jcode){
-    $pattern="/<a.*>/";
-    $base=preg_replace($pattern,"",$base);
-
-    $pattern="/<\/a>/";
-    $base=preg_replace($pattern,"",$base);
-   }//if
-
-   $base=str_replace("__SALEDAY__","",$base);
-   $base=str_replace("__MAKER__",$rowdata["maker"],$base);
-   $base=str_replace("__SNAME__",$rowdata["sname"],$base);
-   $base=str_replace("__TANI__",$rowdata["tani"],$base);
-   $pattern="/(^[Pp]?[0-9]+|半額)(割引|倍)?/";
-   preg_match($pattern,$rowdata["price"],$match);
-   $base=str_replace("__PRICE__",$match[1],$base);
-   if($match[2]){
-    $base=str_replace("__EN__",$match[2],$base);
-   }
-   else{
-    if(preg_match("/^[0-9]+$/",$match[1])){
-     $base=str_replace("__EN__","円",$base);
-    }
-    else{
-     $base=str_replace("__EN__","",$base);
-    }
-   }
-   $base=str_replace("__SALETYPE__",$GLOBALS["SALETYPE"][0],$base);
-   $base=str_replace("__NOTICE__",$rowdata["notice"],$base);
-   $base=str_replace("__JCODE__","",$base);
-   $base=str_replace("__IMGJCODE__",$rowdata["jcode"],$base);
-   $base=str_replace("__LASTSALE__",$kikan,$base);
-   $html.=$base;
- 
-   //変数更新
-   $sday=strtotime($rowdata["sday"]);
-   $eday=strtotime($rowdata["eday"]);
-   $flg1=$rowdata["flg1"];
-
-   $datacnt++;
-   if($datacnt % PAGEITEM ===0){ //config.php(PAGEITEMごとに改ページ)
-    $html.="<div class='pageview'>\n";
-    $html.="<div class='clr'></div>\n";
-    $html.="<pre>".$GLOBALS["MENSEKI"]."</pre>\n";
-    $html.="</div>\n";
-    $html.="<div class='pagebreak'></div>\n";
-    $html.="<div class='pageview'>\n";
-    $html.="<div class='clr'></div>\n";
-    $html.="<img src='".IMG.LOGONAME."'>\n";
-    $html.="<h3>".$kikan." ".$title."</h3>\n";
-    $html.="</div>\n";
-    $datacnt=1;
-    $titlecnt=1;
-   }
   }//foreach
-  $html.="<div class='clr'></div>\n";
-  $html.="</div>\n";
-  return $html;
- }//public static function setitemTirasi($data){
 
- public static function outJan($data,$jcode){
-  foreach($data as $rownum=>$rowdata){
-   if($rowdata["jcode"]!=$jcode){
-    $item[]=$rowdata;
-   }//if
-  }//foreach
-  return $item;
- }//public static function outJan($data,$jcode){
+  //ディレクトリを反映
+  $pattern="__IMG__";
+  $this->html=str_replace($pattern,IMG,$this->html);
 
- public static function storeinfo($data){
-  $html="<ul>";
-  foreach($data as $rownum=>$rowdata){
-   $html.="<li>";
-   $html.="<div class='jpnname'>".$rowdata["jpnname"]."</div>";
-   $html.="<div class='val'>".$rowdata["val"]."</div>";
-   $html.="<div class='clr'></div>";
-   $html.="</li>";
+  $pattern="__CSS__";
+  $this->html=str_replace($pattern,CSS,$this->html);
+
+  $pattern="__JQUERY__";
+  $this->html=str_replace($pattern,JQ,$this->html);
+
+  //echo $this->html;
+ }//public function gethead(){
+
+ public function gelBigIcon($data){
+  foreach($data as $rows=>$row){
+   $this->bigicon_tmp();
+   foreach($row as $col=>$val){
+    $this->element=preg_replace("/<!--".$col."-->/",$val,$this->element);
+    //ここから
+   }//foreach
   }//foreach
-  $html.="</ul>";
-  return $html;
- }// public static function storeinfo($data){
+
+ }// public function gelBigIcon($data){
 }//class html{
 
 function is_mobile () {
