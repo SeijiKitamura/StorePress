@@ -13,7 +13,7 @@ class html extends dataset{
 //----------------------------------------------------------//
 // head雛形
 //----------------------------------------------------------//
- private  function head_tmp(){
+ protected function head_tmp(){
   $this->html=<<<EOF
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
    "http://www.w3.org/TR/html4/loose.dtd">
@@ -55,8 +55,8 @@ EOF;
 //----------------------------------------------------------//
 // body雛形
 //----------------------------------------------------------//
- private  function body_tmp(){
-  $this->html.=<<<EOF
+ protected function body_tmp(){
+  $this->div=<<<EOF
 <!--bodystart-->
 <body>
 <!--wrapperstart-->
@@ -74,10 +74,11 @@ EOF;
 // header雛形
 //----------------------------------------------------------//
  protected function header_tmp(){
-  $this->html.=<<<EOF
+  $this->div=<<<EOF
 <!--headerstart-->
 <div id="header">
 <!--headerhtmlend-->
+ <div class="clr"></div>
 </div>
 <!--headerend-->
 EOF;
@@ -86,8 +87,8 @@ EOF;
 //----------------------------------------------------------//
 // main雛形
 //----------------------------------------------------------//
- private  function main_tmp(){
-  $this->html.=<<<EOF
+ protected function main_tmp(){
+  $this->div=<<<EOF
 <!--mainstart-->
 <div id="main">
 <!--mainhtmlend-->
@@ -99,8 +100,8 @@ EOF;
 //----------------------------------------------------------//
 // leftside雛形
 //----------------------------------------------------------//
- private  function leftside_tmp(){
-  $this->html.=<<<EOF
+ protected function leftside_tmp(){
+  $this->div=<<<EOF
 <!--leftsidestart-->
 <div id="leftside">
 <!--leftsidehtmlend-->
@@ -112,8 +113,8 @@ EOF;
 //----------------------------------------------------------//
 // rightside雛形
 //----------------------------------------------------------//
- private  function rightside_tmp(){
-  $this->html.=<<<EOF
+ protected function rightside_tmp(){
+  $this->div=<<<EOF
 <!--rightsidestart-->
 <div id="rightside">
 <!--rightsidehtmlend-->
@@ -125,8 +126,8 @@ EOF;
 //----------------------------------------------------------//
 // footerside雛形
 //----------------------------------------------------------//
- private  function footer_tmp(){
-  $this->html.=<<<EOF
+ protected function footer_tmp(){
+  $this->div=<<<EOF
 <!--footerstart-->
 <div id="footer">
 <!--footerhtmlend-->
@@ -161,31 +162,6 @@ EOF;
 EOF;
  }//private  function ul_tmp(){
 
-//----------------------------------------------------------//
-// menu雛形(id,classを指定できない)
-//----------------------------------------------------------//
- private function bigicon_tmp(){
-  $this->element=<<<EOF
-   <div class="bigicon">
-    <a href="<!--url-->">
-     <h3><!--flg9--></h3>
-     <span class="subtitle"><!--flg3--></span>
-     <div class="imgdiv">
-      <img src="__TANPINIMG__" alt="<!--maker--><!--sname-->" title="<!--maker--><!--sname-->" >
-     </div>
-     <div class="tanpindiv">
-      <span class="maker"><!--maker--></span>
-      <span class="sname"><!--sname--></span>
-      <span class="tani"><!--tani--></span>
-      <span class="price"><!--price--></span>
-      <span class="yen"><!--yen--></span>
-      <span class="notice"><!--notice--></span>
-      <span class="description"><!--description--></span>
-     </div>
-    </a>
-   </div>
-EOF;
- }// private function bigmenu_tmp(){
 //----------------------------------------------------------//
 // img雛形(imgにはid,classを指定できない)
 //----------------------------------------------------------//
@@ -225,8 +201,44 @@ EOF;
 EOF;
  }//private  function create_a(){
 
+//----------------------------------------------------------//
+// h2雛形(h2にはid,classを指定できない)
+//----------------------------------------------------------//
+ public function create_h2($val){
+  $this->element=<<<EOF
+<!--h2start-->
+<h2>
+{$val}
+<!--h2htmlend-->
+</h2>
+<!--h2end-->
+EOF;
+ }//private  function create_a(){
 
 
+//----------------------------------------------------------//
+// tanpin雛形(id,classを指定できない)
+//----------------------------------------------------------//
+ public function createtanpin(){
+  $this->div=<<<EOF
+ <div class="tanpin">
+  <a href="<!--url-->">
+   <span class="flg9"><!--flg9-->&nbsp</span>
+   <span class="flg2"><!--flg2-->&nbsp</span>
+   <div class="imgdiv">&nbsp</div>
+   <img src="<!--IMG--><!--img-->" alt="<!--maker--> <!--sname--> <!--tani--><!--jcode-->">
+   <span class="maker"><!--maker-->&nbsp</span>
+   <span class="sname"><!--sname-->&nbsp</span>
+   <span class="tani"><!--tani-->&nbsp</span>
+   <span class="price"><!--price--><span class="yen"><!--yen--></span>&nbsp</span>
+   <div class="clr"></div>
+   <span class="notice"><!--notice-->&nbsp</span>
+   <span class="jcode">JAN:<!--jcode-->&nbsp</span>
+   <span class="saleday"><!--saleday-->&nbsp</span>
+  </a>
+ </div>
+EOF;
+ }// public function createtanpin(){
 //----------------------------------------------------------//
 // headを追加
 //----------------------------------------------------------//
@@ -268,9 +280,9 @@ EOF;
 //----------------------------------------------------------//
  public function addhtml($elementname){
   $pattern="<!--".$elementname."end-->";
-  $this->html=preg_replace("/".$pattern."/",$this->div.$pattern,$this->html);
+  $this->html=preg_replace("/".$pattern."/",$pattern.$this->div,$this->html);
   $this->div="";
- }//public function add($element){
+ }//public function addhtml($element){
 
 //----------------------------------------------------------//
 // html内のdivを削除
@@ -289,17 +301,26 @@ EOF;
   $pattern="<!--".$elementname."htmlend-->";
   $this->html=preg_replace("/".$pattern."/",$this->div.$pattern,$this->html);
   $this->div="";
- }//public function add($element){
+ }//public function appendhtml($element){
+
+//----------------------------------------------------------//
+// elementをdivへ追加(削除はできないのでdivごと消してください)
+//----------------------------------------------------------//
+ public function adddiv($elementname){
+  $pattern="<!--".$elementname."end-->";
+  $this->div=preg_replace("/".$pattern."/",$this->element.$pattern,$this->div);
+  $this->element="";
+ }//public function appenddiv($element){
 
 
 //----------------------------------------------------------//
 // elementをdivへ追加(削除はできないのでdivごと消してください)
 //----------------------------------------------------------//
- public function append($elementname){
+ public function appenddiv($elementname){
   $pattern="<!--".$elementname."htmlend-->";
   $this->div=preg_replace("/".$pattern."/",$this->element.$pattern,$this->div);
   $this->element="";
- }//public function add($element){
+ }//public function appenddiv($element){
 
 //----------------------------------------------------------//
 // elementに値を追加
@@ -314,14 +335,14 @@ EOF;
 //----------------------------------------------------------//
  public function addelement($elementname,$val){
   $pattern="<!--".$elementname."end-->";
-  $this->element=preg_replace("/".$pattern."/",$val.$pattern,$this->element);
+  $this->element=preg_replace("/".$pattern."/",$pattern.$val,$this->element);
  }//public function addelement($element,$val){
 
 
 //----------------------------------------------------------//
 // ul生成
 // $data=array("url"=>ページURL,
-//             "val"=>表示させる値
+//             "title"=>表示させる値
 //            )
 // $me="現在のページURL"
 //----------------------------------------------------------//
@@ -330,7 +351,7 @@ EOF;
   foreach($data as $rows=>$row){
    $li.="<li>";
    if($row["url"]!==$me) $li.="<a href='".$row["url"]."'>";
-   $li.=$row["val"];
+   $li.=$row["title"];
    if($row["url"]!==$me) $li.="</a>";
    $li.="</li>";
   }//foreach
@@ -339,62 +360,6 @@ EOF;
   $this->element=preg_replace("/".$pattern."/",$li.$pattern,$this->element);
  }//public function getul(){
 
-//----------------------------------------------------------//
-// headをセット
-//----------------------------------------------------------//
- public function gethead($pagename){
-  //店舗情報セット
-  $this->getStoreInfo();
-  $store=$this->items["data"];
-  if(! $store) throw new exception ("店舗情報がありません");
-  //print_r($store);
-
-  //ページ情報をゲット
-  $this->getPage($pagename);
-  $page=$this->items["data"];
-  if(! $page) throw new exception ("ページ情報がありません");
-  //print_r($page);
-  
-  //ヘッダーをセット
-  $this->head_tmp();
-  
-  //店舗情報を反映
-  foreach($store as $rows=>$row){
-   $pattern="__".$row["colname"]."__";
-   $this->html=str_replace($pattern,$row["val"],$this->html);
-  }//foreach
-
-  //ページ情報を反映
-  foreach($page as $rows=>$row){
-   foreach($row as $col=>$val){
-    $pattern="__".$col."__";
-    $this->html=str_replace($pattern,$val,$this->html);
-   }//foreach
-  }//foreach
-
-  //ディレクトリを反映
-  $pattern="__IMG__";
-  $this->html=str_replace($pattern,IMG,$this->html);
-
-  $pattern="__CSS__";
-  $this->html=str_replace($pattern,CSS,$this->html);
-
-  $pattern="__JQUERY__";
-  $this->html=str_replace($pattern,JQ,$this->html);
-
-  //echo $this->html;
- }//public function gethead(){
-
- public function gelBigIcon($data){
-  foreach($data as $rows=>$row){
-   $this->bigicon_tmp();
-   foreach($row as $col=>$val){
-    $this->element=preg_replace("/<!--".$col."-->/",$val,$this->element);
-    //ここから
-   }//foreach
-  }//foreach
-
- }// public function gelBigIcon($data){
 }//class html{
 
 function is_mobile () {
