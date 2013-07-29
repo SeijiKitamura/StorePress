@@ -46,8 +46,8 @@ class dataset extends DB{
   $this->from =TB_PAGECONF." as t ";
   if($pagename) $this->where=" t.pagename='".$pagename."'";
   $this->group=" t.pagename";
-  $this->order =" case when t.attr='group' then t.val else 9999 end";
-  $this->order.=",case when t.attr='page'  then t.val else 9999 end";
+  $this->order =" case when t.attr='parent' then t.val else 9999 end";
+  $this->order.=",case when t.attr='group'  then t.val else 9999 end";
   $this->getArray();
   $this->items["data"]=$this->ary;
  }//public function getpage($pagename){
@@ -57,13 +57,14 @@ class dataset extends DB{
 // 対象テーブル TB_PAGECONF
 // 抽出方法     グループを指定          
 // ================================================================ //
- public function getGroupList($group){
+ public function getGroupList($parent){
   $this->getPage();
-  if(! $this->items["data"]) throw new exception("グループ情報がありません");
+  if(! $this->items["data"]) throw new exception("ページ情報がありません");
   $data=$this->items["data"];
   $this->items=null;
+
   foreach($data as $rows=>$row){
-   if($row["group"]==$group){
+   if($row["parent"]==$parent || $row["parent"]===0){
     $this->items["data"][]=$row;
    }//if
   }//foraech
@@ -82,7 +83,7 @@ class dataset extends DB{
   $this->from =TB_SALEITEMS." as t ";
   $this->where =" t.saleday='".$hiduke."'";
   if($saletype) $this->where.=" and t.saletype=".$saletype;
-  $this->order =" t.saletype,t.flg0,t.flg4";
+  $this->order =" t.saletype,t.flg0,t.flg1,t.flg4";
   $this->items["data"]=$this->getArray();
 
  }//public function getTopMenuData(){
