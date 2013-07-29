@@ -106,5 +106,27 @@ class dataset extends DB{
   $this->items["data"]=$ary;
  }// public function getMenuData(){
 
+ public function getChildren($pagename){
+  //ページ情報をゲット
+  $this->getPage();
+
+  //$pagenameのページ番号をゲット
+  foreach($this->items["data"] as $rows=>$row){
+   if($row["pagename"]==$pagename){
+    $page=$row["page"];
+    break;
+   }//if
+  }//foreach
+
+  //parentが$pagenameになっているページを抽出
+  foreach($this->items["data"] as $rows=>$row){
+   if($row["parent"]==$page){
+    $ary[]=$row;
+   }
+  }//foreach
+  $this->items=null;
+  $this->items["data"]=$ary;
+
+ }//public function getChildren($pagename){
 }//class dataset extends DB{
 ?>
