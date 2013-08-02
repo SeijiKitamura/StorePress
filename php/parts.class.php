@@ -223,5 +223,38 @@ class parts extends html{
 
   $this->div=$div;
  }// public function getTanpin($data,$me=null){
+
+//----------------------------------------------------------//
+// ニュースリリースを作成
+// $this->divにデータがセットされる
+//----------------------------------------------------------//
+ public function getNews(){
+  $this->getNewsData();
+
+  if(! $this->items["data"]) return false;
+
+  foreach($this->items["data"] as $rows=>$row){
+   $this->creatediv("class","newsdate");
+   $this->element=date("Y年m月d日",strtotime($row["saleday"]));
+   $this->appenddiv("newsdate");
+   $newsdate=$this->div;
+
+   $this->creatediv("class","newstitle");
+   $this->element=$row["notice"];
+   $this->appenddiv("newstitle");
+   $newstitle=$this->div;
+
+   $li[]=array("title"=>$newsdate.$newstitle,"url"=>$row["flg8"]);
+  }//foreach
+  $this->getul($li);
+  $ul=$this->element;
+
+  $this->creatediv("class","news");
+  $this->create_span("最新ニュース");
+  $this->appenddiv("news");
+
+  $this->element=$ul;
+  $this->appenddiv("news");
+ }//public function getnews(){
 }//class parts extends html{
 ?>
