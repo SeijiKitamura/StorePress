@@ -188,7 +188,7 @@ EOF;
  }//private  function create_a(){
 
 //----------------------------------------------------------//
-// span雛形(aにはid,classを指定できない)
+// span雛形(id,classを指定できない)
 //----------------------------------------------------------//
  public function create_span($val){
   $this->element=<<<EOF
@@ -310,7 +310,7 @@ EOF;
   $pattern="<!--".$elementname."end-->";
   $this->div=preg_replace("/".$pattern."/",$this->element.$pattern,$this->div);
   $this->element="";
- }//public function appenddiv($element){
+ }//public function adddiv($element){
 
 
 //----------------------------------------------------------//
@@ -350,9 +350,9 @@ EOF;
   $li="";
   foreach($data as $rows=>$row){
    $li.="<li>";
-   if($row["url"]!==$me) $li.="<a href='".$row["url"]."'>";
+   if($row["url"] && $row["url"]!==$me) $li.="<a href='".$row["url"]."'>";
    $li.=$row["title"];
-   if($row["url"]!==$me) $li.="</a>";
+   if($row["url"] && $row["url"]!==$me) $li.="</a>";
    $li.="</li>";
   }//foreach
   $this->ul_tmp();
