@@ -245,7 +245,7 @@ $TABLES=array(
                                                  ,"primary"=>""
                                                  ,"local"  =>"属性"
                                                 )//attr  
-                             ,"val"      =>array( "type"   =>"varchar(255)"
+                             ,"val"      =>array( "type"   =>"varchar(1000)"
                                                  ,"null"   =>"not null"
                                                  ,"extra"  =>""
                                                  ,"default"=>"''"
@@ -442,6 +442,7 @@ $TABLES=array(
                                                ,"local"  =>"値"
                                               )//val 
                                   )//TB_STORE
+
             );//TABLES
 
 //---------------------------------------------------//
