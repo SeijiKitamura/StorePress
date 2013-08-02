@@ -1,5 +1,19 @@
 <?php
 //-------------------------------------------//
+// 日付チェック                              //
+//-------------------------------------------//
+function ISDATE($hiduke){
+ $pattern="/(20[0-9]{2})[-\/]?([0-1]+[0-9]{1})[-\/]?([0-3]+[0-9]{1})$/";
+ preg_match($pattern,$hiduke,$match);
+ if(! $match) return false;
+ $moto=mktime(0,0,0,$match[2],$match[3],$match[1]);
+ if(date("Y",$moto)!=$match[1] ||
+    date("m",$moto)!=$match[2] ||
+    date("d",$moto)!=$match[3]) return false;
+ return true;
+}
+
+//-------------------------------------------//
 // checkcode生成                             //
 //-------------------------------------------//
 function GETCHECKCODE($str){
