@@ -128,5 +128,23 @@ class dataset extends DB{
   $this->items["data"]=$ary;
 
  }//public function getChildren($pagename){
+
+// ================================================================ //
+// ニュースリリース用データ抽出
+// 対象テーブル TB_SALEITEMS
+// ================================================================ //
+ public function getNewsData(){
+  $hiduke=date("Y-m-d");
+  $saletype=7;
+
+  //TB_SALEITEMSデータを抽出
+  $this->select =" t.saleday,t.notice,t.flg8";
+  $this->from =TB_SALEITEMS." as t ";
+  $this->where =" t.saleday<='".$hiduke."'";
+  if($saletype) $this->where.=" and t.saletype=".$saletype;
+  $this->order =" t.saletype desc";
+  $this->items["data"]=$this->getArray();
+ }//public function getNewsData(){
+
 }//class dataset extends DB{
 ?>
