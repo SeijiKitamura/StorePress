@@ -22,6 +22,8 @@ try{
  $db->creatediv("class","clr");
  $db->appendhtml("main");
 
+ $db->getNews();
+ $db->appendhtml("main");
  echo $db->html;
 
 }
