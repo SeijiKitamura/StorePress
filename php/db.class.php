@@ -71,8 +71,8 @@ class DB{
   $this->sql.="from   ".$this->from." ";
   if($this->where) $this->sql.="where    ".$this->where." ";
   if($this->group) $this->sql.="group by ".$this->group." ";
-  if($this->order) $this->sql.="order by ".$this->order." ";
   if($this->having)$this->sql.="having ".$this->having." ";
+  if($this->order) $this->sql.="order by ".$this->order." ";
 
   //配列初期化
   $this->ary=null;
