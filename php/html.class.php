@@ -163,6 +163,20 @@ EOF;
  }//private  function ul_tmp(){
 
 //----------------------------------------------------------//
+// clr雛形
+//----------------------------------------------------------//
+ public function create_clr(){
+  $this->element=<<<EOF
+<!--divstart-->
+<div class="clr">
+<!--divhtmlend-->
+</div>
+<!--divend-->
+EOF;
+ }//private  function create_img(){
+
+
+//----------------------------------------------------------//
 // img雛形(imgにはid,classを指定できない)
 //----------------------------------------------------------//
  public function create_img($src,$alt=null,$title=null){
@@ -220,7 +234,7 @@ EOF;
 // tanpin雛形(id,classを指定できない)
 //----------------------------------------------------------//
  public function createtanpin(){
-  $this->div=<<<EOF
+  $this->element=<<<EOF
  <div class="tanpin">
   <a href="<!--url-->">
    <span class="flg9"><!--flg9-->&nbsp</span>
