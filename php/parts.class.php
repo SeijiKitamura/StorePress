@@ -284,5 +284,49 @@ class parts extends html{
   $this->element=$ul;
   $this->appenddiv("news");
  }//public function getnews(){
+
+// ================================================================ //
+// チラシ日程データ作成
+// 対象テーブル TB_SALEITEMS
+// ================================================================ //
+ public function getTirasiDayList($saleday=null){
+  if(! $saleday) $saleday=date("Y-m-d");
+  if(! ISDATE($saleday)) throw new exception("日付を確認してください");
+
+  //日付データをゲット
+  $this->getTirasiDayListData($saleday);
+  if(! $this->items["data"]) return false;
+
+  //li用データ作成
+  foreach($this->items["data"] as $rows=>$row){
+   $hiduke=strtotime($row["saleday"]);
+   $url ="tirasiitem.php?saleday=".$row["saleday"];
+   $title =date("Y年n月j日",$hiduke);
+   $title.="(".$GLOBALS["YOUBI"][date("w",$hiduke)].")~";
+   $li[]=array("url"=>$url,"title"=>$title);
+  }//foreach
+  
+  $this->getul($li);
+  $this->creatediv("class","daylist");
+  $this->appenddiv("daylist");
+ }//public function getTirasiDayList($saleday=null){
+
+// ================================================================ //
+// チラシ単品データ作成
+// 対象テーブル TB_SALEITEMS
+// ================================================================ //
+ public function getTirasiTanpinList($saleday=null){
+  //日付ゲット
+  if(! $saleday) $saleday=date("Y-m-d");
+  if(! ISDATE($saleday)) throw new exception("日付を確認してください");
+  
+  //単品データゲット
+  $this->getTirasiTanpinListData($saleday);
+  if(! $this->items["data"]) return false;
+  
+  //単品HTMLゲット
+  $this->getTanpin($this->items["data"]);
+  
+ }//public function getTirasiTanpinList($saleday=null){
 }//class parts extends html{
 ?>
