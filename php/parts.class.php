@@ -210,18 +210,46 @@ class parts extends html{
 
  public function getTanpin($data,$me=null){
   $this->div="";
-  $div="";
+  $flg2="null";
+  $salestart="";
+  $saleend="";
   foreach($data as $rows=>$row){
+   //販売期間をセット
+   if($salestart!=$row["salestart"] && $saleend!=$row["saleend"]){
+    if($row["salestart"]==$row["saleend"]){
+     $salespan=date("n月j日",strtotime($row["salestart"]))."限り";
+    }//if
+    else{
+     $salespan=$row["saleend"]."まで";
+    }//else
+   }//if
+
+   //タイトルをセット
+   if($flg2!=$row["flg2"]){
+    $title=$salespan." ".$row["flg2"];
+   }//if
+   
+
+   if($salestart!=$row["salestart"] || $saleend!=$row["saleend"] ||
+      $flg2!=$row["flg2"]){
+    $this->create_clr();
+    $this->div.=$this->element;
+    $this->create_h2($title);
+    $this->div.=$this->element;
+   }//if
+   
+   //フラグリセット
+   $salestart=$row["salestart"];
+   $saleend=$row["saleend"];
+   $flg2=$row["flg2"];
+   $h2="";
+   //単品枠作成
    $this->createtanpin();
    foreach($row as $col=>$val){
-    $this->div=preg_replace("/<!--".$col."-->/",$val,$this->div);
+    $this->element=preg_replace("/<!--".$col."-->/",$val,$this->element);
    }//foreach
-
-   $div.=$this->div;
-   $this->div="";
+   $this->div.=$this->element;
   }//foreach
-
-  $this->div=$div;
  }// public function getTanpin($data,$me=null){
 
 //----------------------------------------------------------//
