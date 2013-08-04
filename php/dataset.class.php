@@ -146,5 +146,76 @@ class dataset extends DB{
   $this->items["data"]=$this->getArray();
  }//public function getNewsData(){
 
+// ================================================================ //
+// チラシ日程データ抽出
+// 対象テーブル TB_SALEITEMS
+// ================================================================ //
+ public function getTirasiDayListData($saleday=null){
+  if(! $saleday) $saleday=date("Y-m-d");
+  if(! ISDATE($saleday)) throw new exception("日付を確認してください");
+
+  //本日のデータを検索
+  $this->select="*";
+  $this->from =TB_SALEITEMS;
+  $this->where =" saleday='".$saleday."'";
+  $this->where.=" and saletype=1";
+  $this->items["data"]=$this->getArray();
+
+  if(! $this->items["data"]) return false;
+  
+  $tirasiid=$this->items["data"][0]["flg0"];
+
+  //チラシの掲載日をゲット
+  $this->select="saleday,count(jcode) as jcode";
+  $this->from =TB_SALEITEMS;
+  $this->where =" saletype=1";
+  $this->where.=" and flg0='".$tirasiid."'";
+  $this->group ="saleday";
+  $this->order ="saleday";
+  $this->items["data"]=$this->getArray();
+ }//public function getTirasiDayListData(){
+
+// ================================================================ //
+// チラシ単品データ抽出
+// 対象テーブル TB_SALEITEMS
+// 表示順 1.イベント(日替わり イベント 通し)
+// 表示順 2.販売日
+// 表示順 3.アイテム表示順
+// 表示順 4.クラスコード
+// 表示順 5.JANコード
+// ================================================================ //
+ public function getTirasiTanpinListData($saleday=null){
+  //日付確認
+  if(! $saleday) $saleday=date("Y-m-d");
+  if(! ISDATE($saleday)) throw new exception("日付を確認してください");
+  
+  //チラシ番号ゲット
+  $this->select="*";
+  $this->from =TB_SALEITEMS;
+  $this->where =" saleday='".$saleday."'";
+  $this->where.=" and saletype=1";
+  $this->items["data"]=$this->getArray();
+  if(! $this->items["data"]) return false;
+  $tirasiid=$this->items["data"][0]["flg0"];
+  
+  //$saleday以降の商品ゲット
+  $this->select =" min(saleday) as salestart";
+  $this->select.=",max(saleday) as saleend,";
+  $this->select.=" clscode,jcode,maker,sname,tani,price,notice";
+  $this->select.=",flg0,flg1,flg2,flg3,flg4,flg5";
+  $this->select.=",flg6,flg7,flg8,flg9";
+  $this->from =TB_SALEITEMS;
+  $this->where =" flg0='".$tirasiid."'";
+  $this->where.=" and saleday>='".$saleday."'";
+  $this->group =" clscode,jcode,maker,sname,tani,price,notice";
+  $this->group.=",flg0,flg1,flg2,flg3,flg4,flg5";
+  $this->group.=",flg6,flg7,flg8,flg9";
+  $this->having=" min(saleday)<='".$saleday."'";
+  $this->order =" cast(flg1 as SIGNED)";
+  $this->order.=",min(saleday),flg4,clscode,jcode";
+  $this->getArray();
+  if(! $this->ary) return false;
+  $this->items["data"]=$this->ary;
+ }//public function getTirasiTanpinListData($saleday=null){
 }//class dataset extends DB{
 ?>
