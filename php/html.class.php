@@ -3,7 +3,7 @@
 require_once("dataset.class.php");
 class html extends dataset{
  public $html;
- public $div;
+ public $part;
  public $element;
 
  function __construct(){
@@ -13,8 +13,8 @@ class html extends dataset{
 //----------------------------------------------------------//
 // head雛形
 //----------------------------------------------------------//
- protected function head_tmp(){
-  $this->html=<<<EOF
+ public function htmlhead(){
+  $this->element=<<<EOF
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
    "http://www.w3.org/TR/html4/loose.dtd">
 <html lang="ja">
@@ -50,31 +50,29 @@ class html extends dataset{
 <!--headend-->
 
 EOF;
- }//private  function head(){
+  return $this->element;
+ }//private  function htmlhead(){
 
 //----------------------------------------------------------//
 // body雛形
 //----------------------------------------------------------//
- protected function body_tmp(){
-  $this->div=<<<EOF
+ public function htmlbody(){
+  $this->element=<<<EOF
 <!--bodystart-->
 <body>
-<!--wrapperstart-->
-<div id="wrapper">
-<!--wrapperhtmlend-->
-</div>
-<!--wrapperend-->
+<!--bodyhtmlend-->
 </body>
 <!--bodyend-->
 </html>
 EOF;
- }//private  function body_tmp(){
+  return $this->element;
+ }//private  function htmlbody(){
 
 //----------------------------------------------------------//
 // header雛形
 //----------------------------------------------------------//
- protected function header_tmp(){
-  $this->div=<<<EOF
+ public function htmlheader(){
+  $this->element=<<<EOF
 <!--headerstart-->
 <div id="header">
 <!--headerhtmlend-->
@@ -82,77 +80,83 @@ EOF;
 </div>
 <!--headerend-->
 EOF;
- }//private  function header_tmp(){
+  return $this->element;
+ }//private  function htmlheader(){
 
 //----------------------------------------------------------//
 // main雛形
 //----------------------------------------------------------//
- protected function main_tmp(){
-  $this->div=<<<EOF
+ public function htmlmain(){
+  $this->element=<<<EOF
 <!--mainstart-->
 <div id="main">
 <!--mainhtmlend-->
 </div>
 <!--mainend-->
 EOF;
- }//private  function main_tmp(){
+  return $this->element;
+ }//private  function htmlmain(){
 
 //----------------------------------------------------------//
 // leftside雛形
 //----------------------------------------------------------//
- protected function leftside_tmp(){
-  $this->div=<<<EOF
+ public function htmlleftside(){
+  $this->element=<<<EOF
 <!--leftsidestart-->
 <div id="leftside">
 <!--leftsidehtmlend-->
 </div>
 <!--leftsideend-->
 EOF;
- }//private  function leftside_tmp(){
+  return $this->element;
+ }//private  function htmlleftside(){
 
 //----------------------------------------------------------//
 // rightside雛形
 //----------------------------------------------------------//
- protected function rightside_tmp(){
-  $this->div=<<<EOF
+ public function htmlrightside(){
+  $this->element=<<<EOF
 <!--rightsidestart-->
 <div id="rightside">
 <!--rightsidehtmlend-->
 </div>
 <!--rightsideend-->
 EOF;
- }//private  function rightside_tmp(){
+  return $this->element;
+ }//private  function htmlrightside(){
 
 //----------------------------------------------------------//
 // footerside雛形
 //----------------------------------------------------------//
- protected function footer_tmp(){
-  $this->div=<<<EOF
+ public function htmlfooter(){
+  $this->element=<<<EOF
 <!--footerstart-->
 <div id="footer">
 <!--footerhtmlend-->
 </div>
 <!--footerend-->
 EOF;
- }//private  function footer_tmp(){
+  return $this->element;
+ }//private  function htmlfooter(){
 
 //----------------------------------------------------------//
 // div雛形
 //----------------------------------------------------------//
- private  function div_tmp(){
-  $this->div=<<<EOF
+ private  function htmldiv(){
+  $this->element=<<<EOF
 <!--elementnamestart-->
 <div elementtype "elementname">
 <!--elementnamehtmlend-->
 </div>
 <!--elementnameend-->
 EOF;
- }//private  function div_tmp(){
+  return $this->element;
+ }//private  function htmldiv(){
 
 //----------------------------------------------------------//
 // ul雛形(ulにはid,classを指定できない)
 //----------------------------------------------------------//
- private  function ul_tmp(){
+ private  function htmlul(){
   $this->element=<<<EOF
 <!--ulstart-->
 <ul>
@@ -160,12 +164,13 @@ EOF;
 </ul>
 <!--ulend-->
 EOF;
- }//private  function ul_tmp(){
+  return $this->element;
+ }//private  function htmlul(){
 
 //----------------------------------------------------------//
 // clr雛形
 //----------------------------------------------------------//
- public function create_clr(){
+ public function htmlclr(){
   $this->element=<<<EOF
 <!--divstart-->
 <div class="clr">
@@ -173,7 +178,8 @@ EOF;
 </div>
 <!--divend-->
 EOF;
- }//private  function create_img(){
+  return $this->element;
+ }//private  function htmlclr(){
 
 
 //----------------------------------------------------------//
@@ -185,12 +191,13 @@ EOF;
 <img src="{$src}" alt="{$alt}" title="{$title}">
 <!--imgend-->
 EOF;
+  return $this->element;
  }//private  function create_img(){
 
 //----------------------------------------------------------//
 // a雛形(aにはid,classを指定できない)
 //----------------------------------------------------------//
- public function create_a($url,$val=null){
+ public function htmla($url,$val=null){
   $this->element=<<<EOF
 <!--astart-->
 <a href="{$url}">
@@ -199,12 +206,13 @@ EOF;
 </a>
 <!--aend-->
 EOF;
- }//private  function create_a(){
+  return $this->element;
+ }//private  function htmla(){
 
 //----------------------------------------------------------//
 // span雛形(id,classを指定できない)
 //----------------------------------------------------------//
- public function create_span($val){
+ public function htmlspan($val){
   $this->element=<<<EOF
 <!--spanstart-->
 <span>
@@ -213,12 +221,13 @@ EOF;
 </span>
 <!--spanend-->
 EOF;
- }//private  function create_a(){
+  return $this->element;
+ }//private  function htmla(){
 
 //----------------------------------------------------------//
 // h2雛形(h2にはid,classを指定できない)
 //----------------------------------------------------------//
- public function create_h2($val){
+ public function htmlh2($val){
   $this->element=<<<EOF
 <!--h2start-->
 <h2>
@@ -227,13 +236,14 @@ EOF;
 </h2>
 <!--h2end-->
 EOF;
- }//private  function create_a(){
+  return $this->element;
+ }//private  function htmlh2(){
 
 
 //----------------------------------------------------------//
 // tanpin雛形(id,classを指定できない)
 //----------------------------------------------------------//
- public function createtanpin(){
+ public function htmltanpin(){
   $this->element=<<<EOF
  <div class="tanpin">
   <a href="<!--url-->">
@@ -252,107 +262,122 @@ EOF;
   </a>
  </div>
 EOF;
- }// public function createtanpin(){
-//----------------------------------------------------------//
-// headを追加
-//----------------------------------------------------------//
- public function sethead($data=null){
-  $this->head_tmp();
-  $this->body_tmp();
- }//public function sethead($elementtype=null,$elementname=null){
+  return $this->element;
+ }// public function htmltanpin(){
 
 //----------------------------------------------------------//
 // div生成
 //----------------------------------------------------------//
- public function creatediv($elementtype=null,$elementname=null){
-  $this->div_tmp();
+ public function htmlcreatediv($elementtype=null,$elementname=null,$val=null){
+  $this->htmldiv();
   if($elementtype==="id"){
-   $this->div=preg_replace("/elementtype/","id=",$this->div);
+   $this->element=preg_replace("/elementtype/","id=",$this->element);
   }//if
 
   if($elementtype==="class"){
-   $this->div=preg_replace("/elementtype/","class=",$this->div);
+   $this->element=preg_replace("/elementtype/","class=",$this->element);
   }//if
 
   if(! $elementtype){
-   $this->div=preg_replace("/elementtype/","",$this->div);
-   $this->div=preg_replace("/elementname/","",$this->div);
+   $this->element=preg_replace("/elementtype/","",$this->element);
+   $this->element=preg_replace("/elementname/","",$this->element);
   }//if
 
   if($elementname){
-   $this->div=preg_replace("/elementname/",$elementname,$this->div);
+   $this->element=preg_replace("/elementname/",$elementname,$this->element);
   }//if
 
   if(! $elementname){
-   $this->div=preg_replace("/elementtype/","",$this->div);
-   $this->div=preg_replace("/elementname/","",$this->div);
+   $this->element=preg_replace("/elementtype/","",$this->element);
+   $this->element=preg_replace("/elementname/","",$this->element);
   }//if
- }//public function create($elementtype=null,$elementname=null){
+
+  if($val){
+   $this->appendelement($elementname,$val);
+  }
+  return $this->element;
+ }//public function htmlcreatediv($elementtype=null,$elementname=null){
 
 //----------------------------------------------------------//
-// divをhtmlの最後尾へ追加
+// $valをelementnameの最後尾へ追加
 //----------------------------------------------------------//
- public function addhtml($elementname){
+ public function addhtml($elementname,$val){
   $pattern="<!--".$elementname."end-->";
-  $this->html=preg_replace("/".$pattern."/",$pattern.$this->div,$this->html);
-  $this->div="";
+  $this->html=preg_replace("/".$pattern."/",$pattern.$val,$this->html);
+  return $this->html;
  }//public function addhtml($element){
 
 //----------------------------------------------------------//
-// html内のdivを削除
+// html内のelementnameを削除
 //----------------------------------------------------------//
  public function delhtml($elementname){
   $pattern="/<!--".$elementname."start-->.*<!--".$elementname."end-->/s";
   $this->html=preg_replace($pattern,"",$this->html);
-  $this->div="";
+  return $this->html;
  }//public function del($element){
 
 
 //----------------------------------------------------------//
-// html内へdivを追加
+// $valをelementname内へ追加
 //----------------------------------------------------------//
  public function appendhtml($elementname){
   $pattern="<!--".$elementname."htmlend-->";
-  $this->html=preg_replace("/".$pattern."/",$this->div.$pattern,$this->html);
-  $this->div="";
+  $this->html=preg_replace("/".$pattern."/",$this->part.$pattern,$this->html);
+  return $this->html;
  }//public function appendhtml($element){
 
 //----------------------------------------------------------//
-// elementをdivへ追加(削除はできないのでdivごと消してください)
+// $valをpartへ追加(削除はできないのでdivごと消してください)
 //----------------------------------------------------------//
- public function adddiv($elementname){
+ public function addpart($elementname){
   $pattern="<!--".$elementname."end-->";
-  $this->div=preg_replace("/".$pattern."/",$this->element.$pattern,$this->div);
-  $this->element="";
- }//public function adddiv($element){
+  $this->part=preg_replace("/".$pattern."/",$pattern.$this->element,$this->part);
+  return $this->part;
+ }//public function addpart($element){
 
 
 //----------------------------------------------------------//
-// elementをdivへ追加(削除はできないのでdivごと消してください)
+// elementnameをpartへ追加(削除はできないのでdivごと消してください)
 //----------------------------------------------------------//
- public function appenddiv($elementname){
+ public function appendpart($elementname){
   $pattern="<!--".$elementname."htmlend-->";
-  $this->div=preg_replace("/".$pattern."/",$this->element.$pattern,$this->div);
-  $this->element="";
- }//public function appenddiv($element){
+  $this->part=preg_replace("/".$pattern."/",$this->element.$pattern,$this->part);
+  return $this->part;
+ }//public function appendpart($element){
 
 //----------------------------------------------------------//
-// elementに値を追加
+// $valをelementnameの中に追加
 //----------------------------------------------------------//
  public function appendelement($elementname,$val){
   $pattern="<!--".$elementname."htmlend-->";
   $this->element=preg_replace("/".$pattern."/",$val.$pattern,$this->element);
+  return $this->element;
  }//public function appendelement($element){
 
 //----------------------------------------------------------//
-// elementに値を追加
+// $valをelementnameの最後に追加
 //----------------------------------------------------------//
  public function addelement($elementname,$val){
   $pattern="<!--".$elementname."end-->";
   $this->element=preg_replace("/".$pattern."/",$pattern.$val,$this->element);
+  return $this->element;
  }//public function addelement($element,$val){
 
+//----------------------------------------------------------//
+// elementをpartへ追加
+//----------------------------------------------------------//
+ public function stackpart(){
+  $this->part.=$this->element;
+  $this->element="";
+ }
 
+//----------------------------------------------------------//
+// partをhtmlへ追加
+//----------------------------------------------------------//
+ public function stackhtml(){
+  $this->html.=$this->part;
+  $this->part="";
+ }
 //----------------------------------------------------------//
 // ul生成
 // $data=array("url"=>ページURL,
@@ -369,31 +394,14 @@ EOF;
    if($row["url"] && $row["url"]!==$me) $li.="</a>";
    $li.="</li>";
   }//foreach
-  $this->ul_tmp();
+  $this->htmlul();
   $pattern="<!--liend-->";
   $this->element=preg_replace("/".$pattern."/",$li.$pattern,$this->element);
+
+  return $this->element;
  }//public function getul(){
 
 }//class html{
 
-function is_mobile () {
- $useragents = array(
- 'iPhone', // Apple iPhone
- 'iPod', // Apple iPod touch
- 'Android', // 1.5+ Android
- 'dream', // Pre 1.5 Android
- 'CUPCAKE', // 1.5+ Android
- 'blackberry9500', // Storm
- 'blackberry9530', // Storm
- 'blackberry9520', // Storm v2
- 'blackberry9550', // Storm v2
- 'blackberry9800', // Torch
- 'webOS', // Palm Pre Experimental
- 'incognito', // Other iPhone browser
- 'webmate' // Other iPhone browser
- );
- $pattern = '/'.implode('|', $useragents).'/i';
- return preg_match($pattern, $_SERVER['HTTP_USER_AGENT']);
-}
 
 ?>
