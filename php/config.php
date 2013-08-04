@@ -526,4 +526,15 @@ $FACEBTN=<<<EOF
 <div class="fb-like" data-href="__URL__" data-send="false" data-layout="button_count" data-width="450" data-show-faces="false"></div>
 EOF;
 
+//---------------------------------------------------//
+// 曜日
+//---------------------------------------------------//
+$YOUBI=array( 0=>"日"
+             ,1=>"月"
+             ,2=>"火"
+             ,3=>"水"
+             ,4=>"木"
+             ,5=>"金"
+             ,6=>"土"
+            );
 ?>
