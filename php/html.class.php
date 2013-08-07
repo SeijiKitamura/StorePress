@@ -6,6 +6,8 @@ class html extends dataset{
  public $part;
  public $element;
 
+ private $escape;
+
  function __construct(){
   parent::__construct();
  }//function __construct(){
@@ -74,9 +76,8 @@ EOF;
  public function htmlheader(){
   $this->element=<<<EOF
 <!--headerstart-->
-<div id="header">
+<div class="header">
 <!--headerhtmlend-->
- <div class="clr"></div>
 </div>
 <!--headerend-->
 EOF;
@@ -185,14 +186,14 @@ EOF;
 //----------------------------------------------------------//
 // img雛形(imgにはid,classを指定できない)
 //----------------------------------------------------------//
- public function create_img($src,$alt=null,$title=null){
+ public function htmlimg($src,$alt=null,$title=null){
   $this->element=<<<EOF
 <!--imgstart-->
 <img src="{$src}" alt="{$alt}" title="{$title}">
 <!--imgend-->
 EOF;
   return $this->element;
- }//private  function create_img(){
+ }//private  function htmlimg(){
 
 //----------------------------------------------------------//
 // a雛形(aにはid,classを指定できない)
@@ -247,10 +248,11 @@ EOF;
   $this->element=<<<EOF
  <div class="tanpin">
   <a href="<!--url-->">
-   <span class="flg9"><!--flg9-->&nbsp</span>
-   <span class="flg2"><!--flg2-->&nbsp</span>
-   <div class="imgdiv">&nbsp</div>
-   <img src="<!--IMG--><!--img-->" alt="<!--maker--> <!--sname--> <!--tani--><!--jcode-->">
+   <div class="imgdiv">
+    <!--imgstart-->
+    <img src="<!--IMG--><!--img-->" alt="<!--maker--> <!--sname--> <!--tani--><!--jcode-->">
+    <!--imgend-->
+   </div>
    <span class="maker"><!--maker-->&nbsp</span>
    <span class="sname"><!--sname-->&nbsp</span>
    <span class="tani"><!--tani-->&nbsp</span>
@@ -367,7 +369,7 @@ EOF;
 // elementをpartへ追加
 //----------------------------------------------------------//
  public function stackpart(){
-  $this->part.=$this->element;
+  $this->part=$this->element;
   $this->element="";
  }
 
@@ -378,6 +380,7 @@ EOF;
   $this->html.=$this->part;
   $this->part="";
  }
+
 //----------------------------------------------------------//
 // ul生成
 // $data=array("url"=>ページURL,
@@ -385,7 +388,7 @@ EOF;
 //            )
 // $me="現在のページURL"
 //----------------------------------------------------------//
- public function getul($data,$me=null){
+ public function htmlcreateul($data,$me=null){
   $li="";
   foreach($data as $rows=>$row){
    $li.="<li>";
@@ -399,7 +402,29 @@ EOF;
   $this->element=preg_replace("/".$pattern."/",$li.$pattern,$this->element);
 
   return $this->element;
- }//public function getul(){
+ }//public function htmlcreateul(){
+
+
+// ================================================================ //
+// $this->partの退避
+// ================================================================ //
+ public function htmlescapepart(){
+  $this->escape="";
+  if($this->part) $this->escape=$this->part;
+
+  $this->part="";
+ }//public function htmlescapepart(){
+
+// ================================================================ //
+// $this->partの戻し
+// ================================================================ //
+ public function htmlreturnpart(){
+  if($this->escape) $this->part=$this->escape;
+  else $this->part="";
+
+  $this->escape="";
+ }//public function htmlescapepart(){
+
 
 }//class html{
 
