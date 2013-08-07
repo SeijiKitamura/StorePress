@@ -2,23 +2,80 @@
 require_once("html.class.php");
 
 class parts extends html{
+ 
+ public $me;
+ public $lincode;
 
  function __construct(){
   parent::__construct();
  }//function __construct(){
+//----------------------------------------------------------//
+// headをセット
+//----------------------------------------------------------//
+ public function partshead(){
+  //店舗情報セット
+  if(! $this->datasetStoreInfo()) throw new exception ("店舗情報がありません");
+  $store=$this->storeinfo;
+  //print_r($store);
+
+  //ページ情報をゲット
+  if(! $this->datasetPageData($this->me)) throw new exception ("ページ情報がありません");
+  $page=$this->pageinfo;
+  //print_r($page);
+
+  //ヘッダーをセット
+  $html=$this->htmlhead();
+
+  //店舗情報を反映
+  foreach($store as $rows=>$row){
+   $pattern="__".$row["colname"]."__";
+   $html=str_replace($pattern,$row["val"],$html);
+  }//foreach
+
+  //ページ情報を反映
+  foreach($page as $rows=>$row){
+   foreach($row as $col=>$val){
+    $pattern="__".$col."__";
+    $html=str_replace($pattern,$val,$html);
+   }//foreach
+  }//foreach
+
+  //ディレクトリを反映
+  $pattern="__IMG__";
+  $html=str_replace($pattern,IMG,$html);
+
+  $pattern="__CSS__";
+  $html=str_replace($pattern,CSS,$html);
+
+  $pattern="__JQUERY__";
+  $html=str_replace($pattern,JQ,$html);
+
+  $this->element=$html;
+  return $html;
+ }//public function partshead(){
+
 
 //----------------------------------------------------------//
 // ロゴイメージ作成
-// $this->divにロゴイメージ(id=logoimg)が作成される
+// $this->elementにロゴイメージ(id=logoimg)が作成される
 //----------------------------------------------------------//
- public function getLogo(){
+ public function partsLogo(){
   //店舗情報ゲット
-  $this->getStoreInfo();
-  //$store=$this->items["data"][0];
-  $store=$this->items["data"];
+  if(! $this->storeinfo){
+   if(! $this->datasetStoreInfo()) throw new exception ("店舗情報がありません");
+  }//if
+  $store=$this->storeinfo;
 
-  //ロゴイメージ用div作成
-  $this->creatediv("id","logoimg");
+  //$this->part退避
+  $this->htmlescapepart();
+
+  //ロゴイメージ用div作成($this->partにdiv#logoimgが生成)
+  $this->htmlcreatediv("class","logoimg");
+  $this->stackpart();
+
+  //リンク用a作成($this->elementにaタグが生成)
+  $this->htmla("index.php","");
+  $this->appendpart("logoimg");
 
   //ロゴイメージ作成
   foreach($store as $rows =>$row){
@@ -29,198 +86,245 @@ class parts extends html{
     $storename=$row["val"];
    }//if
   }//foreach
-  $this->create_img(IMG.$logourl,$storename,$storename);
+  $this->htmlimg(IMG.$logourl,$storename,$storename);
+  $this->appendpart("a");
+  $this->element=$this->part;
 
-  //ロゴイメージをdivへ追加
-  $this->appenddiv("logoimg");
- }//public function getLogo(){
+  //退避したpartを戻す
+  $this->htmlreturnpart();
+
+  return $this->element;
+ }//public function partsLogo(){
 
 //----------------------------------------------------------//
 // グループリスト作成
-// $this->div(div.group)にグループリスト(ul)が作成される
+// $this->elementにグループリスト(div.group)が作成される
 //----------------------------------------------------------//
- public function getGroup($data,$me){
-  //ulをセット
-  $this->getul($data,$me);
+ public function partsGroup($parent){
+  //グループデータゲット
+  if(! $this->datasetChildren($parent)) throw new exception("該当グループがありません");
+  $data=$this->pageinfo;
 
-  //divを作成
-  $this->creatediv("class","group");
+  //$this->part退避
+  if($this->part) $part=$this->part;
+  $this->part="";
+
+  //divを作成($this->partにdiv.groupが生成)
+  $this->htmlcreatediv("class","group");
+  $this->stackpart();
+
+  //ulをセット($this->elementにulが生成)
+  $this->htmlcreateul($data,$this->me);
 
   //ulをdivへ追加
-  $this->appenddiv("group");
- }//public function getGroup($group){
+  $this->appendpart("group");
+
+  $this->element=$this->part;
+  if($part) $this->part=$part;
+
+  return $this->element;
+ }//public function partsGroup($group){
 
 //----------------------------------------------------------//
 // 営業時間リスト作成
-// $this->div(div.eigyo)に作成される
+// $this->elementにdiv.eigyoが作成される
 //----------------------------------------------------------//
- public function getEigyo(){
-  $this->creatediv("class","eigyo");
-  $this->getStoreInfo();
+ public function partsEigyo(){
+  //表示したい項目をここに列記
   $ary=array("opentime","address","telephone");
-  foreach($this->items["data"] as $rows=>$row){
+
+  //$this->partを退避
+  $this->htmlescapepart();
+
+  //divを作成($this->partにdiv.eigyoを生成)
+  $this->htmlcreatediv("class","eigyo");
+  $this->stackpart();
+
+  //店舗情報をゲット
+  if(! $this->storeinfo) $this->datasetStoreInfo();
+
+  foreach($this->storeinfo as $rows=>$row){
    foreach($ary as $rows2=>$row2){
     if($row["colname"]==$row2){
-     $this->create_span($row["jpnname"]);
+     $this->htmlspan($row["jpnname"]);
      $this->addelement("span",$row["val"]."<br />");
-     $this->appenddiv("eigyo");
+     $this->appendpart("eigyo");
      break;
     }//if
    }//foreach
   }//foreach
-
- }//public function getEigyo(){
-
-//----------------------------------------------------------//
-// headをセット
-//----------------------------------------------------------//
- public function gethead($pagename){
-  //店舗情報セット
-  $this->getStoreInfo();
-  $store=$this->items["data"];
-  if(! $store) throw new exception ("店舗情報がありません");
-  //print_r($store);
-
-  //ページ情報をゲット
-  $this->getPage($pagename);
-  $page=$this->items["data"];
-  if(! $page) throw new exception ("ページ情報がありません");
-  //print_r($page);
-
-  //ヘッダーをセット
-  //$this->head_tmp();
   
-  //店舗情報を反映
-  foreach($store as $rows=>$row){
-   $pattern="__".$row["colname"]."__";
-   $this->html=str_replace($pattern,$row["val"],$this->html);
-  }//foreach
+  $this->element=$this->part;
 
-  //ページ情報を反映
-  foreach($page as $rows=>$row){
-   foreach($row as $col=>$val){
-    $pattern="__".$col."__";
-    $this->html=str_replace($pattern,$val,$this->html);
-   }//foreach
-  }//foreach
+  //退避したpartを戻す
+  $this->htmlreturnpart();
 
-  //ディレクトリを反映
-  $pattern="__IMG__";
-  $this->html=str_replace($pattern,IMG,$this->html);
-
-  $pattern="__CSS__";
-  $this->html=str_replace($pattern,CSS,$this->html);
-
-  $pattern="__JQUERY__";
-  $this->html=str_replace($pattern,JQ,$this->html);
-
-  //echo $this->html;
- }//public function gethead(){
+  return $this->element;
+ }//public function partsEigyo(){
 
 
-//----------------------------------------------------------//
-// フレーム作成
-// $this->htmlに3カラムのhtmlがセットされる
-//----------------------------------------------------------//
- public function getfram(){
-  $this->head_tmp();
-  $this->body_tmp();
-  $this->addhtml("head");
-
-  $this->header_tmp();
-  $this->appendhtml("wrapper");
-
-  $this->leftside_tmp();
-  $this->appendhtml("wrapper");
-
-  $this->main_tmp();
-  $this->appendhtml("wrapper");
-
-  $this->rightside_tmp();
-  $this->appendhtml("wrapper");
-
-  $this->footer_tmp();
-  $this->appendhtml("wrapper");
- }//public function getfram(){
-
- public function getheader($pagename){
-  //メインフレームをゲット
-  $this->getfram();
-
-  //headをゲット
-  $this->gethead($pagename);
-
-  //ロゴイメージをゲット
-  $this->getLogo();
-
-  //ロゴをhaederに追加
-  $this->appendhtml("header");
-
-  //トップナビをゲット
-  $this->getGroupList(1);
-  $this->getGroup($this->items["data"],$pagename);
-
-  //トップナビをheaderに追加
-  $this->appendhtml("header");
-
-  //営業情報をゲット
-  $this->getEigyo();
-  $this->appendhtml("header");
- }//public function getheader($pagename){
-
-//----------------------------------------------------------//
+//==========================================================//
 // バナーを作成
-// $this->divにデータがセットされる
-// $pagename 親ページのページ番号を入力
-//----------------------------------------------------------//
- public function getbanner($pagename){
+// $this->elementにhtmlがセットされる
+// $data=array( "url"        =>"リンク先URL",
+//             ,"title"      =>"表示するタイトル"
+//             ,"img"        =>"表示する画像"
+//             ,"discription"=>"表示する文字"
+//            )
+//==========================================================//
+ public function partsBanner($data){
+  //$this->partを退避
+  $this->htmlescapepart();
 
   $div="";
-
-  $this->getChildren($pagename);
-
-  if(! $this->items["data"]) return false;
-   
-  foreach($this->items["data"] as $rows=>$row){
-   //div.bigmenuを作成
-   $this->creatediv("class","banner");
+  foreach($data as $rows=>$row){
+   //div.bigmenuを作成($this->partにdiv.bannerを生成)
+   $this->htmlcreatediv("class","banner");
+   $this->stackpart();
    
    //div.bigmenuへaタグを追加
-   $this->create_a($row["url"]);
-   $this->appenddiv("banner");
+   $this->htmla($row["url"]);
+   $this->appendpart("banner");
 
    //h2をaタグへ追加
-   $this->create_h2($row["title"]);
-   $this->appenddiv("a");
+   $this->htmlh2($row["title"]);
+   $this->appendpart("a");
 
    //imgをaタグへ追加
-   $this->create_img($row["url"],$row["title"],$row["title"]);
-   $this->appenddiv("a");
+   $this->htmlimg($row["img"],$row["title"],$row["title"]);
+   $this->appendpart("a");
 
    //spanをaタグへ追加
-   $this->create_span($row["description"]);
-   $this->appenddiv("a");
+   $this->htmlspan($row["description"]);
+   $this->appendpart("a");
 
    //div.bigmenuを$divへ追加
-   //$this->appendhtml("main");
-   $div.=$this->div;
+   $div.=$this->part;
+   $this->part="";
   }//foraech
-  $this->div=$div;
- }// public function getChildrenMenu($pagename){
+  $this->element=$div;
+  
+  $this->htmlreturnpart();
 
- public function getTanpin($data,$me=null){
-  $this->div="";
+  return $this->element;
+ }// public function partsBanner($pagename){
+
+//==========================================================//
+// バナーグループ作成
+// $this->elementにhtmlが入る
+//==========================================================//
+ public function partsBrothBanner(){
+  if(! $this->me) throw new exception("ページ名をセットしてください");
+  if(! $this->datasetBroth($this->me)) return false;
+  
+  //ul用にデータを加工
+  $ary[]=array("title"=>"関連ページ");
+  foreach($this->pageinfo as $rows=>$row){
+   $ary[]=array( "url"  =>$row["pagename"]
+                ,"title"=>$row["title"]
+               );
+  }//foreach
+
+  $this->htmlcreateul($ary,$this->me);
+ }//public function partsTirasiBanner(){
+
+//==========================================================//
+// チラシ日程グループ作成
+// $this->elementにhtmlが入る
+//==========================================================//
+ public function partsTirasiDayList(){
+  if(! $this->me) throw new exception("リンク先ページを指定してください");
+
+  //リンク先URLをセット
+  $baseurl=$this->me."?saleday=";
+
+  //セールタイプセット
+  $this->saletype=1;
+  
+  //チラシ日程データゲット($this->itemsに日程データがセットされる)
+  if(! $this->datasetDayListData()){
+   $this->element="";
+   return false;
+  }//if
+
+  //li用データ作成
+  $ary[]=array("title"=>"日程");
+  foreach($this->items as $rows=>$row){
+   $saleday=JPNDATE($row["saleday"]);
+   $ary[]=array( "url"=>$baseurl.$row["saleday"] 
+                ,"title"=>$saleday
+               );
+  }//foreach
+  
+  //$this->part退避
+  $this->htmlescapepart();
+
+  //
+  $this->htmlcreateul($ary,$baseurl.$this->saleday);
+
+  //$this->part戻し
+  $this->htmlreturnpart();
+
+  return $this->element;
+ }//public function partsTirasiDayList(){
+
+//==========================================================//
+// チラシライングループ作成
+// $this->elementにhtmlが入る
+//==========================================================//
+ public function partsTirasiLinList(){
+  if(! $this->me) throw new exception("リンク先ページを指定してください");
+
+  //リンク先URLをセット
+  $baseurl=$this->me."?saleday=".$this->saleday."&lincode=";
+
+  //セールタイプセット
+  $this->saletype=1;
+  
+  //lincodeデータゲット($this->itemsに日程データがセットされる)
+  if(! $this->datasetLinGroup()){
+   $this->element="";
+   return false;
+  }//if
+
+  //li用データ作成
+  $ary[]=array("title"=>"カテゴリー別");
+  foreach($this->items as $rows=>$row){
+   $saleday=JPNDATE($row["saleday"]);
+   $ary[]=array( "url"=>$baseurl.$row["lincode"] 
+                ,"title"=>$row["linname"]."(".$row["jcode"].")"
+               );
+  }//foreach
+  
+  //$this->part退避
+  $this->htmlescapepart();
+
+  //
+  $this->htmlcreateul($ary,$baseurl.$this->lincode);
+
+  //$this->part戻し
+  $this->htmlreturnpart();
+
+  return $this->element;
+ }//public function partsTirasiLinList(){
+
+
+ public function partsTanpin($data,$me=null){
+
   $flg2="null";
   $salestart="";
   $saleend="";
+  $html="";
+  $eventimg="";
   foreach($data as $rows=>$row){
    //販売期間をセット
-   if($salestart!=$row["salestart"] && $saleend!=$row["saleend"]){
+   if($salestart!=$row["salestart"] || $saleend!=$row["saleend"]){
+    $salespan=JPNDATE($row["saleend"]);
     if($row["salestart"]==$row["saleend"]){
-     $salespan=date("n月j日",strtotime($row["salestart"]))."限り";
+     $salespan.="限り";
     }//if
     else{
-     $salespan=$row["saleend"]."まで";
+     $salespan.="まで";
     }//else
    }//if
 
@@ -232,24 +336,61 @@ class parts extends html{
 
    if($salestart!=$row["salestart"] || $saleend!=$row["saleend"] ||
       $flg2!=$row["flg2"]){
-    $this->create_clr();
-    $this->div.=$this->element;
-    $this->create_h2($title);
-    $this->div.=$this->element;
+    $html.=$this->htmlclr();
+    $html.=$this->htmlh2($title);
    }//if
+
+   //チラシ画像をチェック
+   if($row["flg3"] && $row["flg3"]!=$eventimg){
+    $this->htmlcreatediv("class","eventimg");
+    $this->stackpart();
+    $this->htmlimg("../".IMG.$row["flg3"].".jpg");
+    $this->appendpart("eventimg");
+    $html.=$this->part;
+    $eventimg=$row["flg3"];
+   }
    
-   //フラグリセット
+   //フラグセット
    $salestart=$row["salestart"];
    $saleend=$row["saleend"];
    $flg2=$row["flg2"];
    $h2="";
+
    //単品枠作成
-   $this->createtanpin();
+   $this->htmltanpin();
    foreach($row as $col=>$val){
-    $this->element=preg_replace("/<!--".$col."-->/",$val,$this->element);
+    if($col!="price"){
+     $this->element=preg_replace("/<!--".$col."-->/",$val,$this->element);
+    }//if
    }//foreach
-   $this->div.=$this->element;
+
+   //イメージ対応
+   if(file_exists("../".IMG.$row["jcode"].".jpg")){
+    $this->element=preg_replace("/<!--IMG-->/",IMG,$this->element);
+    $this->element=preg_replace("/<!--img-->/",$row["jcode"].".jpg",$this->element);
+   }//if
+   else{
+    $pattern="/<!--imgstart-->.*<!--imgend-->/s";
+    $this->element=preg_replace($pattern,"&nbsp",$this->element);
+   }//else
+
+   //$row["price"]に入っている売価を数字と分裂させる
+   $pattern="/([P0-9]+)(.*)/";
+   preg_match($pattern,$row["price"],$match);
+
+   //売価対応
+   $pattern="/<!--price-->/";
+   $this->element=preg_replace($pattern,$match[1],$this->element);
+
+   //通貨単位対応(円、割引,%引き)
+   $pattern="/<!--yen-->/";
+   if($match[2]) $this->element=preg_replace($pattern,$match[2],$this->element);
+   if(! $match[2]) $this->element=preg_replace($pattern,"円",$this->element);
+   $html.=$this->element;
   }//foreach
+
+  $this->element=$html;
+  return $this->element;
  }// public function getTanpin($data,$me=null){
 
 //----------------------------------------------------------//
@@ -274,7 +415,7 @@ class parts extends html{
 
    $li[]=array("title"=>$newsdate.$newstitle,"url"=>$row["flg8"]);
   }//foreach
-  $this->getul($li);
+  $this->htmlcreateul($li);
   $ul=$this->element;
 
   $this->creatediv("class","news");
@@ -284,32 +425,6 @@ class parts extends html{
   $this->element=$ul;
   $this->appenddiv("news");
  }//public function getnews(){
-
-// ================================================================ //
-// チラシ日程データ作成
-// 対象テーブル TB_SALEITEMS
-// ================================================================ //
- public function getTirasiDayList($saleday=null){
-  if(! $saleday) $saleday=date("Y-m-d");
-  if(! ISDATE($saleday)) throw new exception("日付を確認してください");
-
-  //日付データをゲット
-  $this->getTirasiDayListData($saleday);
-  if(! $this->items["data"]) return false;
-
-  //li用データ作成
-  foreach($this->items["data"] as $rows=>$row){
-   $hiduke=strtotime($row["saleday"]);
-   $url ="tirasiitem.php?saleday=".$row["saleday"];
-   $title =date("Y年n月j日",$hiduke);
-   $title.="(".$GLOBALS["YOUBI"][date("w",$hiduke)].")~";
-   $li[]=array("url"=>$url,"title"=>$title);
-  }//foreach
-  
-  $this->getul($li);
-  $this->creatediv("class","daylist");
-  $this->appenddiv("daylist");
- }//public function getTirasiDayList($saleday=null){
 
 // ================================================================ //
 // チラシ単品データ作成
