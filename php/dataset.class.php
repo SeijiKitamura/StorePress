@@ -288,7 +288,32 @@ class dataset extends DB{
   if(! $this->ary) return false;
   return true;
  }//public function datasetTanpinListData($saleday=null){
- 
+
+// ================================================================ //
+// チラシ単品データ抽出
+// ================================================================ //
+// public function datasetTanpinData(){
+//  //JANコードチェック
+//  if(! $this->jcode || ! CHKCD($this->jcode)) throw new exception("JANコードを確認してください");
+//
+//  //チラシ商品データゲット($this->itemsにデータが格納)
+//  if(! $this->datasetTanpinListData()) return false;
+//
+//  //JANコード検索
+//  foreach($this->items as $rows=>$row){
+//   if($row["jcode"]==$this->jcode){
+//    //単品データ格納
+//    $ary=$this->items[$rows];
+//    $this->lincode=$row["lincode"];
+//    $this->clscode=$row["clscode"];
+//    break;
+//   }//if
+//  }//foreach
+//  echo $this->saleday;
+//  if(! $ary) return false;
+//  $this->items=$ary;
+//  return true;
+// }//public function datasetTanpinData(){
 // ================================================================ //
 // クラスデータ抽出(lincode編)
 // 対象テーブル TB_CLSMAS
