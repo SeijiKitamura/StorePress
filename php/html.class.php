@@ -268,6 +268,58 @@ EOF;
  }// public function htmltanpin(){
 
 //----------------------------------------------------------//
+// bigtanpin雛形(id,classを指定できない)
+//----------------------------------------------------------//
+ public function htmlbigtanpin(){
+  $this->element=<<<EOF
+ <div class="bigtanpin">
+  <a href="<!--url-->">
+   <!--imgdivstart-->
+   <div class="imgdiv">
+    <!--imgstart-->
+    <img src="<!--IMG--><!--img-->" alt="<!--maker--> <!--sname--> <!--tani--><!--jcode-->">
+    <!--imgend-->
+    <!--imgdivhtmlend-->
+   </div>
+   <!--imgdivend-->
+   <!--tanpindeteilstart-->
+   <div class="tanpindeteil">
+    <!--saletypeimgstart-->
+    <img src="<!--IMG--><!--saletype-->.jpg" alt="<!--flg9-->">
+    <!--saletypeimgend-->
+    <span class="maker"><!--maker-->&nbsp</span>
+    <span class="sname"><!--sname-->&nbsp</span>
+    <span class="tani"><!--tani-->&nbsp</span>
+    <span class="price"><!--price--><span class="yen"><!--yen--></span>&nbsp</span>
+    <span class="notice"><!--notice-->&nbsp</span>
+    <span class="jcode">JAN:<!--jcode-->&nbsp</span>
+    <span class="saleday"><!--saleday-->&nbsp</span>
+   </div>
+   <!--tanpindeteilend-->
+  </a>
+  <div class="clr"></div>
+ </div>
+EOF;
+  return $this->element;
+ }// public function htmltanpin(){
+
+
+//----------------------------------------------------------//
+// tanpin(単品拡大)雛形(id,classを指定できない)
+//----------------------------------------------------------//
+ public function htmlsmalltanpin(){
+  $this->element=<<<EOF
+   <div class="divsmallimg">
+    <!--imgstart-->
+    <img src="<!--IMG--><!--img-->" alt="<!--maker--> <!--sname--> <!--tani--><!--jcode-->">
+    <!--imgend-->
+   </div>
+EOF;
+  return $this->element;
+ }// public function htmltanpin(){
+
+
+//----------------------------------------------------------//
 // div生成
 //----------------------------------------------------------//
  public function htmlcreatediv($elementtype=null,$elementname=null,$val=null){
