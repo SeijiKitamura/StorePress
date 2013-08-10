@@ -4,7 +4,6 @@ require_once("html.class.php");
 class parts extends html{
  
  public $me;
- public $lincode;
 
  function __construct(){
   parent::__construct();
@@ -289,6 +288,9 @@ class parts extends html{
 
   //li用データ作成
   $ary[]=array("title"=>"カテゴリー別");
+  $ary[]=array("url"  =>$baseurl,
+               "title"=>"すべての商品");
+
   foreach($this->items as $rows=>$row){
    $saleday=JPNDATE($row["saleday"]);
    $ary[]=array( "url"=>$baseurl.$row["lincode"] 
@@ -309,90 +311,179 @@ class parts extends html{
  }//public function partsTirasiLinList(){
 
 
- public function partsTanpin($data,$me=null){
-
-  $flg2="null";
-  $salestart="";
-  $saleend="";
+//==========================================================//
+// イベントタイトル作成
+// $this->elementにhtmlが入る
+// $dataは単一データを想定
+//==========================================================//
+ public function partsEventTitle($data){
   $html="";
-  $eventimg="";
-  foreach($data as $rows=>$row){
-   //販売期間をセット
-   if($salestart!=$row["salestart"] || $saleend!=$row["saleend"]){
-    $salespan=JPNDATE($row["saleend"]);
-    if($row["salestart"]==$row["saleend"]){
-     $salespan.="限り";
-    }//if
-    else{
-     $salespan.="まで";
-    }//else
+  $salespan=JPNDATE($data["saleend"]);
+  if($data["salestart"]==$data["saleend"]){
+   $salespan.="限り";
+  }//if
+  else{
+   $salespan.="まで";
+  }//else
+
+  //タイトルをセット
+  $title=$salespan." ".$data["flg2"];
+  
+  $html =$this->htmlclr();
+  $html.=$this->htmlh2($title);
+  $this->element=$html;
+
+  return $this->element;
+ }//public function partsEventTitle($data){
+
+//==========================================================//
+// イベント画像作成
+// $this->elementにhtmlが入る
+// $dataは単一データを想定
+//==========================================================//
+ public function partsEventImg($data){
+  $this->element="";
+  $html =$this->htmlclr();
+  if(file_exists("../".IMG.$data["flg3"].".jpg")){
+   $html.=$this->htmlimg("../".IMG.$data["flg3"].".jpg");
+   $this->htmlcreatediv("class","eventimg");
+   $this->appendelement("eventimg",$html);
+  }
+  return $this->element;
+
+ }//public function partsEventImg($data){
+ 
+//==========================================================//
+// 単品をセットする
+// $dataは単一データを想定
+//==========================================================//
+ public function partsTanpinDeteil($data){
+  $this->htmltanpin();
+  foreach($data as $col=>$val){
+   if($col!="price"){
+    $this->element=preg_replace("/<!--".$col."-->/",$val,$this->element);
    }//if
-
-   //タイトルをセット
-   if($flg2!=$row["flg2"]){
-    $title=$salespan." ".$row["flg2"];
-   }//if
-   
-
-   if($salestart!=$row["salestart"] || $saleend!=$row["saleend"] ||
-      $flg2!=$row["flg2"]){
-    $html.=$this->htmlclr();
-    $html.=$this->htmlh2($title);
-   }//if
-
-   //チラシ画像をチェック
-   if($row["flg3"] && $row["flg3"]!=$eventimg){
-    $this->htmlcreatediv("class","eventimg");
-    $this->stackpart();
-    $this->htmlimg("../".IMG.$row["flg3"].".jpg");
-    $this->appendpart("eventimg");
-    $html.=$this->part;
-    $eventimg=$row["flg3"];
-   }
-   
-   //フラグセット
-   $salestart=$row["salestart"];
-   $saleend=$row["saleend"];
-   $flg2=$row["flg2"];
-   $h2="";
-
-   //単品枠作成
-   $this->htmltanpin();
-   foreach($row as $col=>$val){
-    if($col!="price"){
-     $this->element=preg_replace("/<!--".$col."-->/",$val,$this->element);
-    }//if
-   }//foreach
-
-   //イメージ対応
-   if(file_exists("../".IMG.$row["jcode"].".jpg")){
-    $this->element=preg_replace("/<!--IMG-->/",IMG,$this->element);
-    $this->element=preg_replace("/<!--img-->/",$row["jcode"].".jpg",$this->element);
-   }//if
-   else{
-    $pattern="/<!--imgstart-->.*<!--imgend-->/s";
-    $this->element=preg_replace($pattern,"&nbsp",$this->element);
-   }//else
-
-   //$row["price"]に入っている売価を数字と分裂させる
-   $pattern="/([P0-9]+)(.*)/";
-   preg_match($pattern,$row["price"],$match);
-
-   //売価対応
-   $pattern="/<!--price-->/";
-   $this->element=preg_replace($pattern,$match[1],$this->element);
-
-   //通貨単位対応(円、割引,%引き)
-   $pattern="/<!--yen-->/";
-   if($match[2]) $this->element=preg_replace($pattern,$match[2],$this->element);
-   if(! $match[2]) $this->element=preg_replace($pattern,"円",$this->element);
-   $html.=$this->element;
   }//foreach
+
+  //リンク先をセット
+  $url=$this->me."?saleday=".$data["salestart"]."&jcode=".$data["jcode"];
+  $this->element=preg_replace("/<!--url-->/",$url,$this->element);
+
+  //イメージ対応
+  if(file_exists("../".IMG.$data["jcode"].".jpg")){
+   $this->element=preg_replace("/<!--IMG-->/",IMG,$this->element);
+   $this->element=preg_replace("/<!--img-->/",$data["jcode"].".jpg",$this->element);
+  }//if
+  else{
+   $pattern="/<!--imgstart-->.*<!--imgend-->/s";
+   $this->element=preg_replace($pattern,"&nbsp",$this->element);
+  }//else
+
+  //$row["price"]に入っている売価を数字と分裂させる
+  $pattern="/([P0-9]+)(.*)/";
+  preg_match($pattern,$data["price"],$match);
+
+  //売価対応
+  $pattern="/<!--price-->/";
+  $this->element=preg_replace($pattern,$match[1],$this->element);
+
+  //通貨単位対応(円、割引,%引き)
+  $pattern="/<!--yen-->/";
+  if($match[2]) $this->element=preg_replace($pattern,$match[2],$this->element);
+  if(! $match[2]) $this->element=preg_replace($pattern,"円",$this->element);
+
+  //販売日をセット
+  $salespan=JPNDATE($data["saleend"]);
+  if($data["salestart"]==$data["saleend"]){
+   $salespan.="限り";
+  }//if
+  else{
+   $salespan.="まで";
+  }//else
+  $pattern="/<!--saleday-->/";
+  $this->element=preg_replace($pattern,$salespan,$this->element);
+
+  $html.=$this->element;
+  $this->element=$html;
+  return $this->element;
+ }//public function partsTanpinDeteil($data,$me=null){
+
+//==========================================================//
+// 単品をセットする
+// $dataは単一データを想定
+//==========================================================//
+ public function partsBigTanpin($data){
+  $this->htmlbigtanpin();
+  foreach($data as $col=>$val){
+   if($col!="price"){
+    $this->element=preg_replace("/<!--".$col."-->/",$val,$this->element);
+   }//if
+  }//foreach
+
+  //セール画像セット
+  if($data["saletype"]){
+   $url="..".IMG.$data["saletype"].".jpg";
+   $this->element=preg_replace("/<!--saletypeimg-->/",$url,$this->element);
+  }//if
+  else{
+   $pattern="/<!--saletypeimgstart-->.*<!--saletypeimgend-->/";
+   $this->element=preg_replace($pattern,"",$this->element);
+  }
+  //商品画像セット
+  if(file_exists("../".IMG.$data["jcode"].".jpg")){
+   $this->element=preg_replace("/<!--IMG-->/",IMG,$this->element);
+   $this->element=preg_replace("/<!--img-->/",$data["jcode"].".jpg",$this->element);
+  }//if
+  else{
+   $pattern="/<!--imgstart-->.*<!--imgend-->/s";
+   $this->element=preg_replace($pattern,"&nbsp",$this->element);
+  }//else
+
+  //$row["price"]に入っている売価を数字と分裂させる
+  $pattern="/([P0-9]+)(.*)/";
+  preg_match($pattern,$data["price"],$match);
+
+  //売価対応
+  $pattern="/<!--price-->/";
+  $this->element=preg_replace($pattern,$match[1],$this->element);
+
+  //通貨単位対応(円、割引,%引き)
+  $pattern="/<!--yen-->/";
+  if($match[2]) $this->element=preg_replace($pattern,$match[2],$this->element);
+  if(! $match[2]) $this->element=preg_replace($pattern,"円",$this->element);
+  $html.=$this->element;
 
   $this->element=$html;
   return $this->element;
- }// public function getTanpin($data,$me=null){
+ }//public function partsTanpinDeteil($data,$me=null){
 
+
+//==========================================================//
+// 単品の詳細画像をセットする
+// $this->elementに該当データあることが前提
+//==========================================================//
+ public function partsTanpinImg($data){
+  $this->stackpart();
+  $html="";
+  $url="..".IMG.$data["jcode"];
+  foreach(glob($url."*.jpg") as $filename){
+   $img=$this->htmlimg($filename);
+   $this->htmlcreatediv("class","imgdeteil");
+   $this->appendelement("imgdeteil",$img);
+   $this->appendpart("imgdiv");
+  }//foreach
+
+  //リンクを削除
+  $this->part=preg_replace("/<a href.*>/","",$this->part);
+  $this->part=preg_replace("/<\/a>/","",$this->part);
+
+  //
+  //$this->part=preg_replace('/<div class.*clr.*\/div>/',"",$this->part);
+
+  $this->element=$this->part;
+  return $this->element;
+ }//public function partsTanpinImg(){
+ 
 //----------------------------------------------------------//
 // ニュースリリースを作成
 // $this->divにデータがセットされる
