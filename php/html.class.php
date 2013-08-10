@@ -248,11 +248,14 @@ EOF;
   $this->element=<<<EOF
  <div class="tanpin">
   <a href="<!--url-->">
+   <!--imgdivstart-->
    <div class="imgdiv">
     <!--imgstart-->
     <img src="<!--IMG--><!--img-->" alt="<!--maker--> <!--sname--> <!--tani--><!--jcode-->">
     <!--imgend-->
+    <!--imgdivhtmlend-->
    </div>
+   <!--imgdivend-->
    <span class="maker"><!--maker-->&nbsp</span>
    <span class="sname"><!--sname-->&nbsp</span>
    <span class="tani"><!--tani-->&nbsp</span>
@@ -443,11 +446,11 @@ EOF;
  public function htmlcreateul($data,$me=null){
   $li="";
   foreach($data as $rows=>$row){
-   $li.="<li>";
    if($row["url"] && $row["url"]!==$me) $li.="<a href='".$row["url"]."'>";
+   $li.="<li>";
    $li.=$row["title"];
-   if($row["url"] && $row["url"]!==$me) $li.="</a>";
    $li.="</li>";
+   if($row["url"] && $row["url"]!==$me) $li.="</a>";
   }//foreach
   $this->htmlul();
   $pattern="<!--liend-->";
