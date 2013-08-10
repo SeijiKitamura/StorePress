@@ -9,10 +9,11 @@ try{
  if($lincode && ! is_numeric($lincode)) throw new exception("カテゴリー番号を確認してください");
 
  $db=new page();
+ $db->saletype=1;
  $db->saleday=$saleday;
- //$db->saleday="2013-08-04";
  $db->lincode=$lincode;
  $db->me=basename($_SERVER["PHP_SELF"]);
+
  //フレームをセット
  $db->pageFram();
  
@@ -26,6 +27,7 @@ try{
  $db->pageTirasiLinListLeftSide();
 
  //
+ $db->me="tirasitanpin.php";
  $db->pageTanpinList();
  echo $db->html;
 
