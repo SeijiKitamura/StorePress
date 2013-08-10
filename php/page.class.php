@@ -79,6 +79,9 @@ class page extends parts{
   //店舗情報をゲット
   $this->partsEigyo();
   $this->addpart("group");
+
+  $this->htmlclr();
+  $this->addpart("eigyo");
   $this->element=$this->part;
 
   //対比した退避したpartを戻す
@@ -150,20 +153,71 @@ class page extends parts{
  }//public function pageBrothBanner(){
 
 //==========================================================//
-// チラシ単品をセットする
+// 商品リストをセットする
 // $this->htmlにmainがある前提
 //==========================================================//
  public function pageTanpinList(){
   if(! $this->me) throw new exception("ページを指定してください");
+  $flg2=null;
+  $salestart="";
+  $saleend="";
+  $html="";
+  $eventimg="";
 
-  $this->datasetTanpinListData();
-  $this->partsTanpin($this->items);
-  $this->stackpart();
-  //leftside($this->html)にdiv.linlist($this->part)を追加
-  $this->appendhtml("main");
+  if(! $this->datasetTanpinListData()) return false;
+  $data=$this->items;
+  foreach($data as $rows=>$row){
+
+   //販売期間をセット
+   if($salestart!=$row["salestart"] || $saleend!=$row["saleend"] ||
+      $row["flg2"]!==$flg2){ 
+    //日程を表示
+    $html.=$this->partsEventTitle($data[$rows]);
+
+    //イベント画像表示
+    $html.=$this->partsEventImg($data[$rows]);
+   }//if
    
- }//public function pageBrothBanner(){
+   //フラグセット
+   $salestart=$row["salestart"];
+   $saleend=$row["saleend"];
+   $flg2=$row["flg2"];
+   $eventimg=$row["flg3"];
+   $h2="";
+
+   //単品枠作成
+   $html.=$this->partsTanpinDeteil($data[$rows]);
+  }//foreach
+
+  $this->element=$html;
+  $this->stackpart();
+  $this->appendhtml("main"); 
+ }//public function pageTanpinList(){
+
+//==========================================================//
+// 単品をセットする
+// $this->htmlにmainがある前提
+//==========================================================//
+ public function pageTanpin(){
+  if(! $this->me) throw new exception("ページを指定してください");
+  if(! $this->jcode || ! CHKCD($this->jcode)) throw new exception("JANコードを確認してください");
+  if(! $this->datasetTanpinListData()) return false;
+
+  $html="";
+  $data=$this->items[0];
+  //イベント作成
+  $html =$this->partsEventTitle($data);
+
+  //単品枠作成
+  $this->partsBigTanpin($data);
+  $this->partsTanpinImg($data);
+  $html.=$this->element;
+  $this->element=$html;
+  $this->stackpart();
+ 
+  $this->appendhtml("main");
+ }//public function pageTanpin(){
 
 
-}//class page extends parts{
+}//class page extends page{
 ?>
