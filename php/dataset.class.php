@@ -242,8 +242,9 @@ class dataset extends DB{
   return true;
 
  }//public function datasetLinGroup(){
+
 // ================================================================ //
-// チラシ単品データ抽出
+// チラシ商品データ抽出
 // 対象テーブル TB_SALEITEMS
 // 表示順 1.イベント(日替わり イベント 通し)
 // 表示順 2.販売日
@@ -264,16 +265,22 @@ class dataset extends DB{
   $this->select.=",max(t.saleday) as saleend,";
   $this->select.=" t.clscode,t.jcode,t.maker,t.sname,t.tani,t.price,t.notice";
   $this->select.=",t.flg0,t.flg1,t.flg2,t.flg3,t.flg4,t.flg5";
-  $this->select.=",t.flg6,t.flg7,t.flg8,t.flg9";
+  $this->select.=",t.flg6,t.flg7,t.flg8,t.flg9,t.saletype";
+  $this->select.=",t1.clsname,t2.lincode,t2.linname";
   $this->from =TB_SALEITEMS." as t";
   $this->from.=" inner join ".TB_CLSMAS." as t1 on";
   $this->from.=" t.clscode=t1.clscode";
+  $this->from.=" inner join ".TB_LINMAS." as t2 on";
+  $this->from.=" t1.lincode=t2.lincode";
   $this->where =" t.flg0='".$this->flg0."'";
   $this->where.=" and t.saleday>='".$this->saleday."'";
   if($this->lincode) $this->where.=" and t1.lincode=".$this->lincode;
+  if($this->clscode) $this->where.=" and t1.clscode=".$this->clscode;
+  if($this->jcode)   $this->where.=" and t.jcode=".$this->jcode;
   $this->group.=" t.clscode,t.jcode,t.maker,t.sname,t.tani,t.price,t.notice";
   $this->group.=",t.flg0,t.flg1,t.flg2,t.flg3,t.flg4,t.flg5";
-  $this->group.=",t.flg6,t.flg7,t.flg8,t.flg9";
+  $this->group.=",t.flg6,t.flg7,t.flg8,t.flg9,t.saletype";
+  $this->group.=",t1.clsname,t2.lincode,t2.linname";
   $this->having=" min(t.saleday)<='".$this->saleday."'";
   $this->order =" cast(t.flg1 as SIGNED)";
   $this->order.=",min(t.saleday),t.flg4,t.clscode,t.jcode";
