@@ -234,18 +234,18 @@ class parts extends html{
  public function partsTirasiDayList(){
   if(! $this->me) throw new exception("リンク先ページを指定してください");
 
-  //リンク先URLをセット
-  $baseurl=$this->me."?saleday=";
-
-  //セールタイプセット
-  $this->saletype=1;
-  
   //チラシ日程データゲット($this->itemsに日程データがセットされる)
   if(! $this->datasetDayListData()){
    $this->element="";
    return false;
   }//if
 
+  //リンク先URLをセット
+  $baseurl=$this->me."?saleday=";
+
+  //セールタイプセット
+  $this->saletype=1;
+  
   //li用データ作成
   $ary[]=array("title"=>"日程");
   foreach($this->items as $rows=>$row){
@@ -254,7 +254,7 @@ class parts extends html{
                 ,"title"=>$saleday
                );
   }//foreach
-  
+   
   //$this->part退避
   $this->htmlescapepart();
 
@@ -263,7 +263,6 @@ class parts extends html{
 
   //$this->part戻し
   $this->htmlreturnpart();
-
   return $this->element;
  }//public function partsTirasiDayList(){
 
@@ -274,18 +273,18 @@ class parts extends html{
  public function partsTirasiLinList(){
   if(! $this->me) throw new exception("リンク先ページを指定してください");
 
-  //リンク先URLをセット
-  $baseurl=$this->me."?saleday=".$this->saleday."&lincode=";
-
-  //セールタイプセット
-  $this->saletype=1;
-  
   //lincodeデータゲット($this->itemsに日程データがセットされる)
   if(! $this->datasetLinGroup()){
    $this->element="";
    return false;
   }//if
 
+  //リンク先URLをセット
+  $baseurl=$this->me."?saleday=".$this->saleday."&lincode=";
+
+  //セールタイプセット
+  $this->saletype=1;
+  
   //li用データ作成
   $ary[]=array("title"=>"カテゴリー別");
   $ary[]=array("url"  =>$baseurl,
@@ -467,7 +466,8 @@ class parts extends html{
   $html="";
   $url="..".IMG.$data["jcode"];
   foreach(glob($url."*.jpg") as $filename){
-   $img=$this->htmlimg($filename);
+   $imgurl=IMG.basename($filename);
+   $img=$this->htmlimg($imgurl);
    $this->htmlcreatediv("class","imgdeteil");
    $this->appendelement("imgdeteil",$img);
    $this->appendpart("imgdiv");

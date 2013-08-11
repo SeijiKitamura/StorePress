@@ -21,13 +21,16 @@ try{
  $db->part=$db->pageHeader();
  $db->appendhtml("header");
 
- //単品データゲット
- $db->pageTanpin();
+ //セール期間が有効なら
+ if($db->datasetSaleSpan()){
+  //leftside
+  $db->me="tirasidaylist.php";
+  $db->pageTirasiDayListLeftSide();
+  $db->pageTirasiLinListLeftSide();
 
- //leftside
- $db->me="tirasidaylist.php";
- $db->pageTirasiDayListLeftSide();
- $db->pageTirasiLinListLeftSide();
+  //単品データゲット
+  $db->pageTanpin();
+ }
   
  echo $db->html;
 

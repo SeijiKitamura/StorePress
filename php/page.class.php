@@ -95,11 +95,14 @@ class page extends parts{
 // $this->htmlにleftsideがある前提
 //==========================================================//
  public function pageTirasiDayListLeftSide(){
+  //日程ulを作成($this->elementにチラシ日程が生成)
+  if(! $this->partsTirasiDayList()) return false;
+
   //div.daylist作成
   $this->htmlcreatediv("class","daylist");
   $this->stackpart();
 
-  //チラシ日程ulを作成($this->elementにチラシ日程が生成)
+  //ul作成
   $this->partsTirasiDayList();
 
   //$this->partにulを追加
@@ -115,11 +118,14 @@ class page extends parts{
 // $this->htmlにleftsideがある前提
 //==========================================================//
  public function pageTirasiLinListLeftSide(){
+  //ライングループulを作成($this->elementにライングループが生成)
+  if(! $this->partsTirasiLinList()) return false;
+
   //div.linlist作成
   $this->htmlcreatediv("class","linlist");
   $this->stackpart();
 
-  //ライングループulを作成($this->elementにライングループが生成)
+  //ul作成
   $this->partsTirasiLinList();
 
   //$this->partにulを追加
@@ -137,12 +143,12 @@ class page extends parts{
  public function pageBrothBanner(){
   if(! $this->me) throw new exception("ページを指定してください");
 
+  //ライングループulを作成($this->elementにライングループが生成)
+  if(! $this->partsBrothBanner()) return false;
+
   //div.banner作成
   $this->htmlcreatediv("class","broth");
   $this->stackpart();
-
-  //ライングループulを作成($this->elementにライングループが生成)
-  $this->partsBrothBanner();
 
   //$this->partにulを追加
   $this->appendpart("broth");
@@ -218,6 +224,31 @@ class page extends parts{
   $this->appendhtml("main");
  }//public function pageTanpin(){
 
+//==========================================================//
+// 単品ページ作成
+// $this->htmlにhtmlデータが作成される
+// 必要なメンバー 
+//  $this->saletype
+//  $this->saleday
+//  $this->jcode
+//  $this->me(ひな形となるページ名)
+//==========================================================//
+ public function pageCreateTanpin(){
+  //フレームをセット
+  $this->pageFram();
+  
+  //ヘッダーをセット
+  $this->part=$this->pageHeader();
+  $this->appendhtml("header");
 
+  //単品データゲット
+  $this->pageTanpin();
+
+  //leftside
+  $this->me="tirasidaylist.php";
+  $this->pageTirasiDayListLeftSide();
+  $this->pageTirasiLinListLeftSide();
+ 
+ }//public function pageTanpinPage(){
 }//class page extends page{
 ?>

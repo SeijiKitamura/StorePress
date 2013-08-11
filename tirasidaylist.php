@@ -21,14 +21,18 @@ try{
  $db->part=$db->pageHeader();
  $db->appendhtml("header");
 
- //チラシ日程をセット(leftside)
  $db->pageBrothBanner();
- $db->pageTirasiDayListLeftSide();
- $db->pageTirasiLinListLeftSide();
 
- //
- $db->me="tirasitanpin.php";
- $db->pageTanpinList();
+ //セール期間が有効なら
+ if($db->datasetSaleSpan()){
+  //チラシ日程をセット(leftside)
+  $db->pageTirasiDayListLeftSide();
+  $db->pageTirasiLinListLeftSide();
+  
+  //商品リスト表示
+  $db->me="tirasitanpin.php";
+  $db->pageTanpinList();
+ }//if
  echo $db->html;
 
 }//try
