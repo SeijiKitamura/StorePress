@@ -343,7 +343,7 @@ class dataset extends DB{
 // 抽出方法     日付選択可能
 // ================================================================ //
  public function datasetGetFlg0(){
-  if(! ISDATE($this->saleday)) throw new exception("日付を確認してください");
+  if(! ISDATE($this->saleday)) throw new exception("日付を確認してください。datasetGetFlg0");
   if($this->saletype!=1) throw new exception("セールタイプを確認してください");
   //本日のデータを検索
   $this->select="*";

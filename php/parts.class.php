@@ -344,7 +344,7 @@ class parts extends html{
   $this->element="";
   $html =$this->htmlclr();
   if(file_exists("../".IMG.$data["flg3"].".jpg")){
-   $html.=$this->htmlimg("../".IMG.$data["flg3"].".jpg");
+   $html.=$this->htmlimg(IMG.$data["flg3"].".jpg");
    $this->htmlcreatediv("class","eventimg");
    $this->appendelement("eventimg",$html);
   }
