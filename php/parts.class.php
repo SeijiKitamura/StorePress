@@ -22,14 +22,37 @@ class parts extends html{
   $page=$this->pageinfo;
   //print_r($page);
 
+  //tirasidaylist.phpならnext,prev,descriptionの変更
+  if($this->me=="tirasidaylist.php"){
+   $nextprev=$this->partsNextPrev();
+   if($nextprev){
+    $replace="";
+    if($nextprev["prev"]["saleday"]){
+     $replace ="tirasidaylist.php?saleday=".$nextprev["prev"]["saleday"];
+    }//if
+
+    if($nextprev["prev"]["lincode"]){
+     $replace.="&lincode=".$nextprev["prev"]["lincode"];
+    }//if
+    $page[0]["prev"]=$replace;
+
+    $replace="";
+    $replace =$nextprev["me"]["saleday"]." ".$nextprev["me"]["linname"];
+    $page[0]["description"].=$replace;
+
+    $replace="";
+    if($nextprev["next"]["saleday"]){
+     $replace ="tirasidaylist.php?saleday=".$nextprev["next"]["saleday"];
+    }//if
+    if($nextprev["next"]["lincode"]){
+     $replace.="&lincode=".$nextprev["next"]["lincode"];
+    }//if
+    $page[0]["next"]=$replace;
+   }//if
+  }//if
+
   //ヘッダーをセット
   $html=$this->htmlhead();
-
-  //店舗情報を反映
-  foreach($store as $rows=>$row){
-   $pattern="__".$row["colname"]."__";
-   $html=str_replace($pattern,$row["val"],$html);
-  }//foreach
 
   //ページ情報を反映
   foreach($page as $rows=>$row){
@@ -38,6 +61,13 @@ class parts extends html{
     $html=str_replace($pattern,$val,$html);
    }//foreach
   }//foreach
+
+  //店舗情報を反映
+  foreach($store as $rows=>$row){
+   $pattern="__".$row["colname"]."__";
+   $html=str_replace($pattern,$row["val"],$html);
+  }//foreach
+
 
   //ディレクトリを反映
   $pattern="__IMG__";
@@ -52,8 +82,82 @@ class parts extends html{
   $this->element=$html;
   return $html;
  }//public function partshead(){
+ 
+//----------------------------------------------------------//
+// 次ページ、前ページを情報ゲット
+// 引数 $this->saletype
+// 引数 $this->saleday
+//----------------------------------------------------------//
+ public function partsNextPrev(){
+  if($this->saletype==1){
+   //販売期間をゲット
+   if(! $this->datasetSaleSpan()) return false;
 
+   //saledayを退避
+   $saleday=$this->saleday;
+   $this->saleday=null;
 
+   //販売リストをゲット
+   $this->datasetLinGroup();
+
+   if(! $this->items) return false;
+
+   //next,prevデータ作成(日付が変われば、lincode=nullをセット)
+   $s=null;
+   foreach($this->items as $rows=>$row){
+    if($row["saleday"]!=$s){
+     $ary[]=array( "saleday"=>$row["saleday"]
+                  ,"lincode"=>null
+                  ,"linname"=>null);
+    }//if
+    $ary[]=array( "saleday"=>$row["saleday"]
+                 ,"lincode"=>$row["lincode"]
+                 ,"linname"=>$row["linname"]);
+    $s=$row["saleday"];
+   }//foreach
+
+   //該当データ抽出
+   foreach($ary as $rows=>$row){
+    if($row["saleday"]==$saleday && $row["lincode"]==$this->lincode){
+     break;
+    }//if
+   }//foreach
+   
+   //最初のデータの場合
+   if(! $rows){
+    $prev=null;
+   }//if
+   else{
+    //前ページデータ
+    $prevrows=$rows-1;
+    $prev=array( "saleday"=>$ary[$prevrows]["saleday"]
+                ,"lincode"=>$ary[$prevrows]["lincode"]
+                ,"linname"=>$ary[$prevrows]["linname"]);
+
+   }//else
+   //現在ページデータ
+   $me  =array( "saleday"=>$ary[$rows]["saleday"]
+               ,"lincode"=>$ary[$rows]["lincode"]
+               ,"linname"=>$ary[$rows]["linname"]);
+   //次ページデータ
+   $nextrows=$rows+1;
+   if(! $this->items[$nextrows]){
+    $next=null;
+   }//if
+   else{
+    $next=array( "saleday"=>$ary[$nextrows]["saleday"]
+                ,"lincode"=>$ary[$nextrows]["lincode"]
+                ,"linname"=>$ary[$nextrows]["linname"]);
+   }//else
+   $this->items=null;
+   $this->items["prev"]=$prev;
+   $this->items["me"]=$me;
+   $this->items["next"]=$next;
+   //saledayを戻す
+   $this->saleday=$saleday;
+  }//if
+  return $this->items;
+ }//public function partsNextPrev(){
 //----------------------------------------------------------//
 // ロゴイメージ作成
 // $this->elementにロゴイメージ(id=logoimg)が作成される
@@ -369,8 +473,8 @@ class parts extends html{
   $this->element=preg_replace("/<!--url-->/",$url,$this->element);
 
   //イメージ対応
+  $this->element=preg_replace("/<!--IMG-->/",IMG,$this->element);
   if(file_exists("../".IMG.$data["jcode"].".jpg")){
-   $this->element=preg_replace("/<!--IMG-->/",IMG,$this->element);
    $this->element=preg_replace("/<!--img-->/",$data["jcode"].".jpg",$this->element);
   }//if
   else{
@@ -421,7 +525,7 @@ class parts extends html{
 
   //セール画像セット
   if($data["saletype"]){
-   $url="..".IMG.$data["saletype"].".jpg";
+   $url=IMG.$data["saletype"].".jpg";
    $this->element=preg_replace("/<!--saletypeimg-->/",$url,$this->element);
   }//if
   else{
@@ -430,13 +534,15 @@ class parts extends html{
   }
   //商品画像セット
   if(file_exists("../".IMG.$data["jcode"].".jpg")){
-   $this->element=preg_replace("/<!--IMG-->/",IMG,$this->element);
    $this->element=preg_replace("/<!--img-->/",$data["jcode"].".jpg",$this->element);
   }//if
   else{
    $pattern="/<!--imgstart-->.*<!--imgend-->/s";
    $this->element=preg_replace($pattern,"&nbsp",$this->element);
   }//else
+
+  //画像ディレクトリ反映
+  $this->element=preg_replace("/<!--IMG-->/",IMG,$this->element);
 
   //$row["price"]に入っている売価を数字と分裂させる
   $pattern="/([P0-9]+)(.*)/";
