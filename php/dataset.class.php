@@ -205,29 +205,27 @@ class dataset extends DB{
 // 対象テーブル TB_SALEITEMS
 // ================================================================ //
  public function datasetLinGroup(){
-  if(! ISDATE($this->saleday)) throw new exception("日付を確認してください");
-  if(! $this->saletype) throw new exception("セールタイプを選択してください");
-  //本日のデータを検索
-  //if(! $this->datasetSaleSpan()) return false;
-
   //期間中のlincodeをゲット
-  $this->select=" t2.lincode,t2.linname,count(t.jcode) as jcode";
+  $this->select =" t.saleday";
+  $this->select.=",t2.lincode,t2.linname,count(t.jcode) as jcode";
   $this->from =TB_SALEITEMS." as t ";
   $this->from.=" inner join ".TB_CLSMAS." as t1 on";
   $this->from.=" t.clscode=t1.clscode";
   $this->from.=" inner join ".TB_LINMAS." as t2 on";
   $this->from.=" t1.lincode=t2.lincode";
   $this->where =" t.saletype=".$this->saletype;
-  $this->where.=" and t.saleday='".$this->saleday."'";
-  if($this->salestart==$this->saleend){
+  if($this->saleday){
    $this->where.=" and t.saleday='".$this->saleday."'";
+  }//if
+  elseif($this->salestart==$this->saleend){
+   $this->where.=" and t.saleday='".$this->salestart."'";
   }//if
   else{
    $this->where.=" and t.saleday between '".$this->salestart."'";
    $this->where.=" and '".$this->saleend."'";
   }//else
-  $this->group ="t2.lincode,t2.linname";
-  $this->order ="t2.lincode";
+  $this->group ="t.saleday,t2.lincode,t2.linname";
+  $this->order ="t.saleday,t2.lincode";
   $this->items=$this->getArray();
   if(! $this->ary) return false;
   return true;
