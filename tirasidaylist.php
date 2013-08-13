@@ -14,13 +14,14 @@ try{
  $db->lincode=$lincode;
  $db->me=basename($_SERVER["PHP_SELF"]);
 
- //フレームをセット
+ //フレームをセット($db->htmlにhtmlが生成)
  $db->pageFram();
- 
+
  //ヘッダーをセット
  $db->part=$db->pageHeader();
  $db->appendhtml("header");
 
+ //leftsideに関連ページ表示
  $db->pageBrothBanner();
 
  //セール期間が有効なら
@@ -32,7 +33,9 @@ try{
   //商品リスト表示
   $db->me="tirasitanpin.php";
   $db->pageTanpinList();
+
  }//if
+ 
  echo $db->html;
 
 }//try
