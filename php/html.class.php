@@ -36,7 +36,7 @@ class html extends dataset{
     __title__ | __storename__ 
   </title>
   <!--titleend-->
-  <meta name="description" content="__description__ __jcode__">
+  <meta name="description" content="__description__"> 
   <meta name="viewport" content="width=device-width,initial-scale=1.0,minimau-scale=1.0,maximum-scale=2,user-scalable=yes">
   <meta name="format-detection" content="telephone=no">
   <link rel="icon" href="__IMG____favcon__" type="type/ico" sizes="16x16" /> 
