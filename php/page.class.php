@@ -118,6 +118,9 @@ class page extends parts{
 // $this->htmlにleftsideがある前提
 //==========================================================//
  public function pageTirasiLinListLeftSide(){
+  //チラシ期間をセット
+  if(! $this->datasetSaleSpan()) return false;
+
   //ライングループulを作成($this->elementにライングループが生成)
   if(! $this->partsTirasiLinList()) return false;
 
