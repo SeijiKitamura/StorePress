@@ -20,60 +20,19 @@ class parts extends html{
 
   //ページ情報をゲット
   if(! $this->datasetPageData($this->me)) throw new exception ("ページ情報がありません");
-  $page=$this->pageinfo;
   //print_r($page);
 
   //tirasidaylist.phpならnext,prev,descriptionの変更
   if($this->me=="tirasidaylist.php"){
-   $nextprev=$this->partsNextPrev();
-   if($nextprev){
-    $replace="";
-    if($nextprev["prev"]["saleday"]){
-     $replace ="tirasidaylist.php?saleday=".$nextprev["prev"]["saleday"];
-    }//if
-
-    if($nextprev["prev"]["lincode"]){
-     $replace.="&lincode=".$nextprev["prev"]["lincode"];
-    }//if
-    $page[0]["prev"]=$replace;
-
-    $replace="";
-    $replace =$nextprev["me"]["saleday"]." ".$nextprev["me"]["linname"];
-    $page[0]["description"].=$replace;
-
-    $replace="";
-    if($nextprev["next"]["saleday"]){
-     $replace ="tirasidaylist.php?saleday=".$nextprev["next"]["saleday"];
-    }//if
-    if($nextprev["next"]["lincode"]){
-     $replace.="&lincode=".$nextprev["next"]["lincode"];
-    }//if
-    $page[0]["next"]=$replace;
-   }//if
+   $this->partsNextPrev();
   }//if
 
   //tirasitanpin.phpならnext,prev,descriptionの変更
   if($this->me=="tirasitanpin.php"){
    $nextprev=$this->partsNextPrev();
-   if($nextprev["prev"]){
-    $replace ="tirasitanpin.php?saleday=".$nextprev["prev"]["salestart"];
-    $replace.="&jcode=".$nextprev["prev"]["jcode"];
-   }//if
-   $page[0]["prev"]=$replace;
-
-   if($nextprev["next"]){
-    $replace ="tirasitanpin.php?saleday=".$nextprev["next"]["salestart"];
-    $replace.="&jcode=".$nextprev["next"]["jcode"];
-   }//if
-   $page[0]["next"]=$replace;
-
-   $replace="";
-   $replace =$nextprev["me"]["salestart"]." ".$nextprev["me"]["jcode"];
-   $replace.=$nextprev["me"]["maker"]." ".$nextprev["me"]["sname"];
-   $replace.=$nextprev["me"]["tani"]." ".$nextprev["me"]["notice"];
-   $page[0]["description"].=$replace;
-   $replace="";
   }//if
+  $page=$this->pageinfo;
+
   //ヘッダーをセット
   $html=$this->htmlhead();
 
@@ -108,8 +67,14 @@ class parts extends html{
  
 //----------------------------------------------------------//
 // 次ページ、前ページを情報ゲット
+// 前提 $this->pageinfoにデータがセット済み
 // 引数 $this->saletype
 // 引数 $this->saleday
+// 引数 $this->jcode
+//----------------------------------------------------------//
+// $prev 前ページのURLがセット
+// $me   ページのdescriptionがセット
+// $next 次ページのURLがセット
 //----------------------------------------------------------//
  public function partsNextPrev(){
   if($this->me=="tirasidaylist.php"){
@@ -125,7 +90,7 @@ class parts extends html{
 
    if(! $this->items) return false;
 
-   //next,prevデータ作成(日付が変われば、lincode=nullをセット)
+   //商品リストデータ作成(日付が変われば、lincode=nullをセット)
    $s=null;
    foreach($this->items as $rows=>$row){
     if($row["saleday"]!=$s){
@@ -153,29 +118,27 @@ class parts extends html{
    else{
     //前ページデータ
     $prevrows=$rows-1;
-    $prev=array( "saleday"=>$ary[$prevrows]["saleday"]
-                ,"lincode"=>$ary[$prevrows]["lincode"]
-                ,"linname"=>$ary[$prevrows]["linname"]);
-
+    $prev =$this->me."?saleday=".$ary[$prevrows]["saleday"];
+    if($ary[$prevrows]["lincode"]){
+     $prev.="&lincode=".$ary[$prevrows]["lincode"];
+    }//if
    }//else
+
    //現在ページデータ
-   $me  =array( "saleday"=>$ary[$rows]["saleday"]
-               ,"lincode"=>$ary[$rows]["lincode"]
-               ,"linname"=>$ary[$rows]["linname"]);
+   $me=$ary[$rows]["saleday"]." ".$ary[$rows]["linname"];
+
    //次ページデータ
    $nextrows=$rows+1;
-   if(! $this->items[$nextrows]){
+   if(! $ary[$nextrows]){
     $next=null;
    }//if
    else{
-    $next=array( "saleday"=>$ary[$nextrows]["saleday"]
-                ,"lincode"=>$ary[$nextrows]["lincode"]
-                ,"linname"=>$ary[$nextrows]["linname"]);
+    $next =$this->me."?saleday=".$ary[$nextrows]["saleday"];
+    if($ary[$nextrows]["lincode"]){
+     $next.="&lincode=".$ary[$nextrows]["lincode"];
+    }//if
    }//else
-   $this->items=null;
-   $this->items["prev"]=$prev;
-   $this->items["me"]=$me;
-   $this->items["next"]=$next;
+
    //saledayを戻す
    $this->saleday=$saleday;
   }//if
@@ -199,7 +162,8 @@ class parts extends html{
 
    //該当データ抽出
    $flg=0;
-   foreach($this->items as $rows=>$row){
+   $ary=$this->items;
+   foreach($ary as $rows=>$row){
     if($row["jcode"]==$jcode){
      $flg=1;
      break;
@@ -214,10 +178,19 @@ class parts extends html{
     //前ページデータ
     $prevrows=$rows-1;
     $prev=$this->items[$prevrows];
+
+    $prev =$this->me."?saleday=".$ary[$prevrows]["salestart"];
+    if($ary[$prevrows]["jcode"]){
+     $prev.="&jcode=".$ary[$prevrows]["jcode"];
+    }//if
    }//else
 
    //現在ページデータ
-   $me  =$this->items[$rows];
+   $me =$ary[$rows]["jcode"]." ";
+   $me.=$ary[$rows]["maker"]." ";
+   $me.=$ary[$rows]["sname"]." ";
+   $me.=$ary[$rows]["tani"]." ";
+   $me.=$ary[$rows]["notice"]." ";
 
    //次ページデータ
    $nextrows=$rows+1;
@@ -225,19 +198,21 @@ class parts extends html{
     $next=null;
    }//if
    else{
-    $next=$this->items[$nextrows];
+    $next =$this->me."?saleday=".$ary[$prevrows]["salestart"];
+    if($ary[$nextrows]["jcode"]){
+     $next.="&jcode=".$ary[$nextrows]["jcode"];
+    }//if
    }//else
-
-   $this->items=null;
-   $this->items["prev"]=$prev;
-   $this->items["me"]=$me;
-   $this->items["next"]=$next;
 
    //saledayを戻す
    $this->saleday=$saleday;
    $this->lincode=$lincode;
    $this->jcode  =$jcode;
   }//if
+
+  $this->pageinfo[0]["prev"]=$prev;
+  $this->pageinfo[0]["description"].=$me;
+  $this->pageinfo[0]["next"]=$next;
 
   return $this->items;
  }//public function partsNextPrev(){
