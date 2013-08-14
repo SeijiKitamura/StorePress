@@ -12,6 +12,7 @@ class parts extends html{
 // headをセット
 //----------------------------------------------------------//
  public function partshead(){
+
   //店舗情報セット
   if(! $this->datasetStoreInfo()) throw new exception ("店舗情報がありません");
   $store=$this->storeinfo;
@@ -51,6 +52,28 @@ class parts extends html{
    }//if
   }//if
 
+  //tirasitanpin.phpならnext,prev,descriptionの変更
+  if($this->me=="tirasitanpin.php"){
+   $nextprev=$this->partsNextPrev();
+   if($nextprev["prev"]){
+    $replace ="tirasitanpin.php?saleday=".$nextprev["prev"]["salestart"];
+    $replace.="&jcode=".$nextprev["prev"]["jcode"];
+   }//if
+   $page[0]["prev"]=$replace;
+
+   if($nextprev["next"]){
+    $replace ="tirasitanpin.php?saleday=".$nextprev["next"]["salestart"];
+    $replace.="&jcode=".$nextprev["next"]["jcode"];
+   }//if
+   $page[0]["next"]=$replace;
+
+   $replace="";
+   $replace =$nextprev["me"]["salestart"]." ".$nextprev["me"]["jcode"];
+   $replace.=$nextprev["me"]["maker"]." ".$nextprev["me"]["sname"];
+   $replace.=$nextprev["me"]["tani"]." ".$nextprev["me"]["notice"];
+   $page[0]["description"].=$replace;
+   $replace="";
+  }//if
   //ヘッダーをセット
   $html=$this->htmlhead();
 
@@ -89,7 +112,7 @@ class parts extends html{
 // 引数 $this->saleday
 //----------------------------------------------------------//
  public function partsNextPrev(){
-  if($this->saletype==1){
+  if($this->me=="tirasidaylist.php"){
    //販売期間をゲット
    if(! $this->datasetSaleSpan()) return false;
 
@@ -156,6 +179,66 @@ class parts extends html{
    //saledayを戻す
    $this->saleday=$saleday;
   }//if
+
+  if($this->me=="tirasitanpin.php"){
+   //販売期間をゲット
+   if(! $this->datasetSaleSpan()) return false;
+
+   //saleday,linocde,jcodeを退避
+   $saleday=$this->saleday;
+   $lincode=$this->lincode;
+   $jcode  =$this->jcode;
+   $this->saleday=null;
+   $this->lincode=null;
+   $this->jcode  =null;
+
+   //販売リストをゲット
+   $this->datasetTanpinListData();
+
+   if(! $this->items) return false;
+
+   //該当データ抽出
+   $flg=0;
+   foreach($this->items as $rows=>$row){
+    if($row["jcode"]==$jcode){
+     $flg=1;
+     break;
+    }//if
+   }//foreach
+   
+   //最初のデータの場合
+   if(! $rows){
+    $prev=null;
+   }//if
+   else{
+    //前ページデータ
+    $prevrows=$rows-1;
+    $prev=$this->items[$prevrows];
+   }//else
+
+   //現在ページデータ
+   $me  =$this->items[$rows];
+
+   //次ページデータ
+   $nextrows=$rows+1;
+   if(! $this->items[$nextrows]){
+    $next=null;
+   }//if
+   else{
+    $next=$this->items[$nextrows];
+   }//else
+
+   $this->items=null;
+   $this->items["prev"]=$prev;
+   $this->items["me"]=$me;
+   $this->items["next"]=$next;
+
+   //saledayを戻す
+   $this->saleday=$saleday;
+   $this->lincode=$lincode;
+   $this->jcode  =$jcode;
+  }//if
+
   return $this->items;
  }//public function partsNextPrev(){
 //----------------------------------------------------------//
