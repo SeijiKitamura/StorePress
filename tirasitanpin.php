@@ -31,6 +31,10 @@ try{
   //単品データゲット
   $db->pageTanpin();
  }
+ 
+ //画像変更を追加
+ $db->part=$db->htmlImageChange();
+ $db->appendhtml("head");
   
  echo $db->html;
 
