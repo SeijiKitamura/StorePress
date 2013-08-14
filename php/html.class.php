@@ -355,6 +355,26 @@ EOF;
   return $this->element;
  }//public function htmlcreatediv($elementtype=null,$elementname=null){
 
+ public function htmlImageChange(){
+  $this->element=<<<EOF
+<script>
+$(function(){
+ var moto=$("div.imgdiv>img").attr("src");
+ console.log(moto);
+ $("div.imgdeteil>img").hover(function(){
+  var imgsrc=$(this).attr("src");
+  $("div.imgdiv>img").attr("src",imgsrc);}
+  ,
+  function(){
+   $("div.imgdiv>img").attr("src",moto);
+  }
+ );
+});
+</script>
+EOF;
+  return $this->element;
+ }// public function htmlImageChange(){
+
 //----------------------------------------------------------//
 // $valをelementnameの最後尾へ追加
 //----------------------------------------------------------//
