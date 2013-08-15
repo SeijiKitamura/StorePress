@@ -274,13 +274,23 @@ class ImportData extends db{
    //トランザクション開始
    $this->BeginTran();
 
-   //データ削除
-   $this->from=$this->tablename;
-   $this->where="id>0";
-   $this->delete();
+//   //データ削除
+//   $this->from=$this->tablename;
+//   $this->where="id>0";
+//   $this->delete();
 
    //データ更新
+   $saleday=null;
+   $saletype=null;
    foreach($this->items["data"] as $rownum=>$rowdata){
+    if($rowdata["saleday"]!=$saleday || $rowdata["saletype"]!=$saletype){
+     $saleday=$rowdata["saleday"];
+     $saletype=$rowdata["saletype"];
+     $this->from=$this->tablename;
+     $this->where="saleday='".$saleday."' and saletype=".$saletype;
+     $this->delete();
+    }//if
+
     if (! $rowdata["status"]) continue;  //エラーデータを除く
     foreach($rowdata as $col=>$val){
      if($col=="status") continue;
