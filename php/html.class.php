@@ -359,14 +359,14 @@ EOF;
   $this->element=<<<EOF
 <script>
 $(function(){
- var moto=$("div.imgdiv>img").attr("src");
+ var moto=$("div.imgdiv>img:first").attr("src");
  console.log(moto);
  $("div.imgdeteil>img").hover(function(){
   var imgsrc=$(this).attr("src");
-  $("div.imgdiv>img").attr("src",imgsrc);}
+  $("div.imgdiv>img:first").attr("src",imgsrc);}
   ,
   function(){
-   $("div.imgdiv>img").attr("src",moto);
+   $("div.imgdiv>img:first").attr("src",moto);
   }
  );
 });
