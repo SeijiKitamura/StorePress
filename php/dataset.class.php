@@ -206,7 +206,7 @@ class dataset extends DB{
 // ================================================================ //
  public function datasetLinGroup(){
   //期間中のlincodeをゲット
-  $this->select =" t.saleday";
+  $this->select =" t.saleday,t.flg9";
   $this->select.=",t2.lincode,t2.linname,count(t.jcode) as jcode";
   $this->from =TB_SALEITEMS." as t ";
   $this->from.=" inner join ".TB_CLSMAS." as t1 on";
@@ -224,7 +224,7 @@ class dataset extends DB{
    $this->where.=" and t.saleday between '".$this->salestart."'";
    $this->where.=" and '".$this->saleend."'";
   }//else
-  $this->group ="t.saleday,t2.lincode,t2.linname";
+  $this->group ="t.saleday,t.flg9,t2.lincode,t2.linname";
   $this->order ="t.saleday,t2.lincode";
   $this->items=$this->getArray();
   if(! $this->ary) return false;
