@@ -204,6 +204,54 @@ class page extends parts{
  }//public function pageTanpinList(){
 
 //==========================================================//
+// 商品リストから$jcode商品を除外する
+// $this->htmlにmainがある前提
+//==========================================================//
+ public function pageTanpinListOther($jcode=null){
+  if(! $this->me) throw new exception("ページを指定してください");
+  $flg2=null;
+  $salestart="";
+  $saleend="";
+  $html="";
+  $eventimg="";
+
+  if(! $this->datasetTanpinListData()) return false;
+  $item=$this->items;
+
+  foreach($item as $rows=>$row){
+   if($row["jcode"]!=$jcode){
+    $data[]=$row;
+   }//if
+  }//foreach
+
+  foreach($data as $rows=>$row){
+   //販売期間をセット
+   if($salestart!=$row["salestart"] || $saleend!=$row["saleend"] ||
+      $row["flg2"]!==$flg2){ 
+
+    //日程を表示
+    $html.=$this->partsEventTitle($data[$rows]);
+   }//if
+   
+   //フラグセット
+   $salestart=$row["salestart"];
+   $saleend=$row["saleend"];
+   $flg2=$row["flg2"];
+   $eventimg=$row["flg3"];
+   $h2="";
+
+   //単品枠作成
+   $html.=$this->partsTanpinDeteil($data[$rows]);
+  }//foreach
+
+  $this->element=$html;
+  $this->stackpart();
+  $this->appendhtml("main"); 
+
+
+ }//public function pageTanpinListother(){
+
+//==========================================================//
 // 単品をセットする
 // $this->htmlにmainがある前提
 //==========================================================//
