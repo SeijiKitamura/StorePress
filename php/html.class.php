@@ -361,13 +361,17 @@ EOF;
 $(function(){
  var moto=$("div.imgdiv>img:first").attr("src");
  console.log(moto);
- $("div.imgdeteil>img").hover(function(){
+// $("div.imgdeteil>img").hover(function(){
+//  var imgsrc=$(this).attr("src");
+//  $("div.imgdiv>img:first").attr("src",imgsrc);}
+//  ,
+//  function(){
+//   $("div.imgdiv>img:first").attr("src",moto);
+//  }
+// );
+ $("div.imgdeteil>img").click(function(){
   var imgsrc=$(this).attr("src");
   $("div.imgdiv>img:first").attr("src",imgsrc);}
-  ,
-  function(){
-   $("div.imgdiv>img:first").attr("src",moto);
-  }
  );
 });
 </script>
