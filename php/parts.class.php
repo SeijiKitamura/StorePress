@@ -96,11 +96,13 @@ class parts extends html{
     if($row["saleday"]!=$s){
      $ary[]=array( "saleday"=>$row["saleday"]
                   ,"lincode"=>null
-                  ,"linname"=>null);
+                  ,"linname"=>null
+                  ,"flg9"   =>null);
     }//if
     $ary[]=array( "saleday"=>$row["saleday"]
                  ,"lincode"=>$row["lincode"]
-                 ,"linname"=>$row["linname"]);
+                 ,"linname"=>$row["linname"]
+                 ,"flg9"   =>$row["flg9"]);
     $s=$row["saleday"];
    }//foreach
 
@@ -125,7 +127,8 @@ class parts extends html{
    }//else
 
    //現在ページデータ
-   $me=$ary[$rows]["saleday"]." ".$ary[$rows]["linname"];
+   //$me=$ary[$rows]["saleday"]." ".$ary[$rows]["linname"];
+   $me=$ary[$rows]["flg9"]." ".$ary[$rows]["linname"]." ".$ary[$rows]["saleday"];
 
    //次ページデータ
    $nextrows=$rows+1;
@@ -186,11 +189,13 @@ class parts extends html{
    }//else
 
    //現在ページデータ
-   $me =$ary[$rows]["jcode"]." ";
+   $me =$ary[$rows]["flg9"]." ";
    $me.=$ary[$rows]["maker"]." ";
    $me.=$ary[$rows]["sname"]." ";
+   $me.=JPNDATE($ary[$rows]["salestart"])." ";
    $me.=$ary[$rows]["tani"]." ";
    $me.=$ary[$rows]["notice"]." ";
+   $me.=$ary[$rows]["jcode"]." ";
 
    //次ページデータ
    $nextrows=$rows+1;
@@ -211,6 +216,7 @@ class parts extends html{
   }//if
 
   $this->pageinfo[0]["prev"]=$prev;
+  $this->pageinfo[0]["title"]=$me.$this->pageinfo[0]["title"];
   $this->pageinfo[0]["description"].=$me;
   $this->pageinfo[0]["next"]=$next;
 
@@ -442,7 +448,8 @@ class parts extends html{
   }//if
 
   //リンク先URLをセット
-  $baseurl=$this->me."?saleday=".$this->saleday."&lincode=";
+  //$baseurl=$this->me."?saleday=".$this->saleday."&lincode=";
+  $baseurl=$this->me."?saleday=".$this->saleday;
 
   //セールタイプセット
   $this->saletype=1;
@@ -453,8 +460,14 @@ class parts extends html{
                "title"=>"すべての商品");
 
   foreach($this->items as $rows=>$row){
-   $saleday=JPNDATE($row["saleday"]);
-   $ary[]=array( "url"=>$baseurl.$row["lincode"] 
+   //$saleday=JPNDATE($row["saleday"]);
+   if($row["lincode"]){
+    $url=$baseurl."&lincode=".$row["lincode"];
+   }//if
+   else{
+    $url=$baseurl;
+   }
+   $ary[]=array( "url"=>$url 
                 ,"title"=>$row["linname"]."(".$row["jcode"].")"
                );
   }//foreach
@@ -463,7 +476,7 @@ class parts extends html{
   $this->htmlescapepart();
 
   //
-  $this->htmlcreateul($ary,$baseurl.$this->lincode);
+  $this->htmlcreateul($ary,$baseurl."&lincode=".$this->lincode);
 
   //$this->part戻し
   $this->htmlreturnpart();
@@ -527,7 +540,8 @@ class parts extends html{
   }//foreach
 
   //リンク先をセット
-  $url=$this->me."?saleday=".$data["salestart"]."&jcode=".$data["jcode"];
+  //$url=$this->me."?saleday=".$data["salestart"]."&jcode=".$data["jcode"];
+  $url=$this->me."?saleday=".$data["salestart"]."&lincode=".$data["lincode"]."&jcode=".$data["jcode"];
   $this->element=preg_replace("/<!--url-->/",$url,$this->element);
 
   //イメージ対応
@@ -631,12 +645,12 @@ class parts extends html{
   $url="..".IMG.$data["jcode"];
   foreach(glob($url."*.jpg") as $filename){
    $imgurl=IMG.basename($filename);
-   $img=$this->htmlimg($imgurl);
+   $alt=$data["maker"].$data["sname"].$data["tani"].basename($filename);
+   $img=$this->htmlimg($imgurl,$alt);
    $this->htmlcreatediv("class","imgdeteil");
    $this->appendelement("imgdeteil",$img);
    $this->appendpart("imgdiv");
   }//foreach
-
   //リンクを削除
   $this->part=preg_replace("/<a href.*>/","",$this->part);
   $this->part=preg_replace("/<\/a>/","",$this->part);
