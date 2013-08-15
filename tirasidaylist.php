@@ -33,7 +33,6 @@ try{
   //商品リスト表示
   $db->me="tirasitanpin.php";
   $db->pageTanpinList();
-
  }//if
  
  echo $db->html;

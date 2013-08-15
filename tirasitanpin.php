@@ -5,6 +5,9 @@ try{
  if(! $saleday) $saleday=date("Y-m-d");
  if(! ISDATE($saleday)) throw new exception("日付を確認してください");
 
+ $lincode=$_GET["lincode"];
+ if(! is_numeric($lincode)) throw new exception("部門コードを確認してください");
+
  $jcode=$_GET["jcode"];
  if(! CHKCD($jcode)) throw new exception("JANコードを確認してください");
 
@@ -12,6 +15,7 @@ try{
  $db->me=basename($_SERVER["PHP_SELF"]);
  $db->saletype=1;
  $db->saleday=$saleday;
+ $db->lincode=$lincode;
  $db->jcode=$jcode;
 
  //フレームをセット
