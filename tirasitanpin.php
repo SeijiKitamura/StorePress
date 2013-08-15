@@ -30,9 +30,15 @@ try{
 
   //単品データゲット
   $db->pageTanpin();
+
+  //その他の単品を表示
+  $db->me="tirasitanpin.php";
+  $db->jcode=null;
+  $db->lincode=$db->items[0]["lincode"];
+  $db->pageTanpinListOther($jcode);
  }
  
- //画像変更を追加
+ //画像変更を追加(jQuery)
  $db->part=$db->htmlImageChange();
  $db->appendhtml("head");
   
