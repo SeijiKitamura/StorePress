@@ -22,15 +22,8 @@ class parts extends html{
   if(! $this->datasetPageData($this->me)) throw new exception ("ページ情報がありません");
   //print_r($page);
 
-  //tirasidaylist.phpならnext,prev,descriptionの変更
-  if($this->me=="tirasidaylist.php"){
-   $this->partsNextPrev();
-  }//if
+  $this->partsNextPrev();
 
-  //tirasitanpin.phpならnext,prev,descriptionの変更
-  if($this->me=="tirasitanpin.php"){
-   $nextprev=$this->partsNextPrev();
-  }//if
   $page=$this->pageinfo;
 
   //ヘッダーをセット
@@ -203,7 +196,7 @@ class parts extends html{
     $next=null;
    }//if
    else{
-    $next =$this->me."?saleday=".$ary[$prevrows]["salestart"];
+    $next =$this->me."?saleday=".$ary[$nextrows]["salestart"];
     if($ary[$nextrows]["jcode"]){
      $next.="&jcode=".$ary[$nextrows]["jcode"];
     }//if
@@ -213,6 +206,51 @@ class parts extends html{
    $this->saleday=$saleday;
    $this->lincode=$lincode;
    $this->jcode  =$jcode;
+  }//if
+
+  if($this->me=="maillist.php"){
+   //販売期間をゲット
+   if(! $this->datasetSaleSpan()) return false;
+
+   //販売リストをゲット
+   $this->partsTirasiDayList();
+
+   if(! $this->items) return false;
+
+   //該当データ抽出
+   $flg=0;
+   $ary=$this->items;
+   foreach($ary as $rows=>$row){
+    if($row["saleday"]==$this->saleday){
+     $flg=1;
+     break;
+    }//if
+   }//foreach
+
+   //最初のデータの場合
+   if(! $rows){
+    $prev=null;
+   }//if
+   else{
+    //前ページデータ
+    $prevrows=$rows-1;
+    $prev=$this->items[$prevrows];
+
+    $prev =$this->me."?saleday=".$ary[$prevrows]["saleday"];
+   }//else
+
+   //現在ページデータ
+   $me =JPNDATE($ary[$rows]["saleday"])." ";
+
+   //次ページデータ
+   $nextrows=$rows+1;
+   if(! $this->items[$nextrows]){
+    $next=null;
+   }//if
+   else{
+    $next =$this->me."?saleday=".$ary[$nextrows]["saleday"];
+   }//else
+ 
   }//if
 
   $this->pageinfo[0]["prev"]=$prev;
@@ -412,7 +450,7 @@ class parts extends html{
   $baseurl=$this->me."?saleday=";
 
   //セールタイプセット
-  $this->saletype=1;
+  //$this->saletype=1;
   
   //li用データ作成
   $ary[]=array("title"=>"日程");
