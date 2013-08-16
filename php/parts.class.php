@@ -139,7 +139,7 @@ class parts extends html{
    $this->saleday=$saleday;
   }//if
 
-  if($this->me=="tirasitanpin.php"){
+  if($this->me=="tirasitanpin.php" || $this->me=="mailitem.php"){
    //販売期間をゲット
    if(! $this->datasetSaleSpan()) return false;
 
@@ -250,7 +250,6 @@ class parts extends html{
    else{
     $next =$this->me."?saleday=".$ary[$nextrows]["saleday"];
    }//else
- 
   }//if
 
   $this->pageinfo[0]["prev"]=$prev;
