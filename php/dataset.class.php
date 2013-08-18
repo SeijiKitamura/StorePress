@@ -328,10 +328,10 @@ class dataset extends DB{
    $this->salestart=$this->ary[0]["salestart"];
    $this->saleend  =$this->ary[0]["saleend"];
   }//if
-  else if($this->saletype==3){
+  else if($this->saletype==3 || $this->saletype==4){
    $this->salestart=date("Y-m-d",strtotime("-".MAILDAYLIST."days"));
    $this->saleend  =date("Y-m-d");
-  }//if
+  }//else if
   else{
    $this->salestart=$this->saleday;
    $this->saleend  =$this->saleday;
