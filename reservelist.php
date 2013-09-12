@@ -5,8 +5,8 @@ try{
  if(! $saleday) $saleday=date("Y-m-d");
  if(! ISDATE($saleday)) throw new exception("日付を確認してください");
 
-//$lincode=$_GET["lincode"];
-//if($lincode && ! is_numeric($lincode)) throw new exception("カテゴリー番号を確認してください");
+ $lincode=$_GET["lincode"];
+ if($lincode && ! is_numeric($lincode)) throw new exception("カテゴリー番号を確認してください");
 
  $db=new page();
  $db->saletype=2;
@@ -23,15 +23,15 @@ try{
  //leftsideに関連ページ表示
  $db->pageBrothBanner();
 
- //商品リスト表示
+ //セール期間が有効なら
  if($db->datasetSaleSpan()){
+  
+  //商品リスト表示
   $db->me="reserveitem.php";
   $db->pageTanpinList();
- }
+ }//if
  
  echo $db->html;
- echo "<pre>";
- print_r($db->items);
 
 }//try
 catch(Exception $e){
