@@ -15,7 +15,16 @@ try{
 
  //フレームをセット($db->htmlにhtmlが生成)
  $db->pageFram();
- $db->datasetSaleSpan();
+
+ $val=<<<EOF
+メール会員様特別価格!当店が発行するメールマガジン会員様限定のサービスです。
+当店から配信されるメール画面をレジ係員にご提示ください。対象商品を上記価格にて販売させていただきます。
+
+EOF;
+ $db->part=$db->htmlcreatediv("class","mail",$val);
+ $db->appendhtml("main");
+
+  $db->datasetSaleSpan();
  //ヘッダーをセット
  $db->part=$db->pageHeader();
  $db->appendhtml("header");
@@ -35,14 +44,7 @@ try{
  //メールのご紹介
  $db->part=$db->htmlclr();
  $db->appendhtml("main");
- $val=<<<EOF
-メール会員様特別価格!当店が発行するメールマガジン会員様限定のサービスです。
-当店から配信されるメール画面をレジ係員にご提示ください。対象商品を上記価格にて販売させていただきます。
 
-EOF;
- $db->part=$db->htmlcreatediv("class","mail",$val);
- $db->appendhtml("main");
- 
  echo $db->html;
 }//try
 catch(Exception $e){
