@@ -280,15 +280,14 @@ class ImportData extends db{
 //   $this->delete();
 
    //データ更新
-   $saleday=null;
-   $saletype=null;
+   $flg=null;
    foreach($this->items["data"] as $rownum=>$rowdata){
-    if($rowdata["saleday"]!=$saleday || $rowdata["saletype"]!=$saletype){
-     $saleday=$rowdata["saleday"];
-     $saletype=$rowdata["saletype"];
+    if(! $flg){
      $this->from=$this->tablename;
-     $this->where="saleday='".$saleday."' and saletype=".$saletype;
+     //$this->where="saleday='".$saleday."' and saletype=".$saletype;
+     $this->where="saleday>='".$rowdata["saleday"]."'";
      $this->delete();
+     $flg=1;
     }//if
 
     if (! $rowdata["status"]) continue;  //エラーデータを除く

@@ -15,7 +15,6 @@
 //  CreateTable() 配列にセットされたテーブルを作成。
 //----------------------------------------------------//
 require_once("config.php");
-require_once("function.php");
 
 class DB{
  private $pdo;

@@ -239,10 +239,11 @@ class dataset extends DB{
 // 抽出方法 2.$this->salestart (必須)
 // 抽出方法 3.$this->saleend   (必須)
 // 表示順 1.イベント(日替わり イベント 通し)
-// 表示順 2.販売日
-// 表示順 3.アイテム表示順
-// 表示順 4.クラスコード
-// 表示順 5.JANコード
+// 表示順 2.販売開始日
+// 表示順 3.販売終了日
+// 表示順 4.アイテム表示順
+// 表示順 5.クラスコード
+// 表示順 6.JANコード
 // ================================================================ //
  public function datasetTanpinListData(){
   if(! $this->saletype) throw new exception("セールタイプを選択してください");
@@ -281,9 +282,10 @@ class dataset extends DB{
    $this->having.=" and max(t.saleday)>='".$this->saleday."'";
   }//if
   $this->order =" cast(t.flg1 as SIGNED)";
-  $this->order.=",min(t.saleday),t.flg4,t.clscode,t.jcode";
+  $this->order.=",min(t.saleday),max(t.saleday),t.flg4,t.clscode,t.jcode";
   $this->items=$this->getArray();
   if(! $this->ary) return false;
+
   return true;
  }//public function datasetTanpinListData($saleday=null){
 
@@ -316,7 +318,7 @@ class dataset extends DB{
   if(! ISDATE($this->saleday)) throw new exception("販売日を確認してください");
 
   //チラシの場合
-  if($this->saletype==1){
+  if($this->saletype==1 || $this->saletype==2){
    $this->datasetGetFlg0();//$this->flg0にチラシ番号が入る
    if(! $this->flg0) return false;
    $this->select =" min(saleday) as salestart";
@@ -346,7 +348,7 @@ class dataset extends DB{
 // ================================================================ //
  public function datasetGetFlg0(){
   if(! ISDATE($this->saleday)) throw new exception("日付を確認してください。datasetGetFlg0");
-  if($this->saletype!=1) throw new exception("セールタイプを確認してください");
+  //if($this->saletype!=1) throw new exception("セールタイプを確認してください");
   //本日のデータを検索
   $this->select="*";
   $this->from =TB_SALEITEMS;

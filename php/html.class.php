@@ -262,6 +262,7 @@ EOF;
    <span class="price"><!--price--><span class="yen"><!--yen--></span>&nbsp</span>
    <div class="clr"></div>
    <span class="notice"><!--notice-->&nbsp</span>
+   <span class="salespan"><!--salespan--></span>
    <span class="jcode">JAN:<!--jcode-->&nbsp</span>
    <span class="saleday"><!--saleday-->&nbsp</span>
   </a>
@@ -295,6 +296,7 @@ EOF;
     <span class="tani"><!--tani-->&nbsp</span>
     <span class="price"><!--price--><span class="yen"><!--yen--></span>&nbsp</span>
     <span class="notice"><!--notice-->&nbsp</span>
+    <span class="salespan"><!--salespan--></span>
     <span class="jcode">JAN:<!--jcode-->&nbsp</span>
     <span class="saleday"><!--saleday-->&nbsp</span>
    </div>

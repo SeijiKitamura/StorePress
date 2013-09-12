@@ -604,6 +604,14 @@ class parts extends html{
   if($match[2]) $this->element=preg_replace($pattern,$match[2],$this->element);
   if(! $match[2]) $this->element=preg_replace($pattern,"円",$this->element);
 
+//  //販売期間セット
+//  if($data["flg6"] && $data["flg7"]){
+//   $salespan ="お渡し期間:<br />".JPNDATESHORT($data["flg6"])."から";
+//   $salespan.=JPNDATESHORT($data["flg7"]);
+//   $pattern="/<!--salespan-->/";
+//   $this->element=preg_replace($pattern,$salespan,$this->element);
+//  }//if
+
   //販売日をセット
   $salespan=JPNDATE($data["saleend"]);
   if($data["salestart"]==$data["saleend"]){
@@ -665,6 +673,15 @@ class parts extends html{
   $pattern="/<!--yen-->/";
   if($match[2]) $this->element=preg_replace($pattern,$match[2],$this->element);
   if(! $match[2]) $this->element=preg_replace($pattern,"円",$this->element);
+
+  //販売期間セット
+  if($data["flg6"] && $data["flg7"]){
+   $salespan ="お渡し期間:<br />".JPNDATESHORT($data["flg6"])."から";
+   $salespan.=JPNDATESHORT($data["flg7"]);
+   $pattern="/<!--salespan-->/";
+   $this->element=preg_replace($pattern,$salespan,$this->element);
+  }//if
+
   $html.=$this->element;
 
   $this->element=$html;

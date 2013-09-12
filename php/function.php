@@ -40,27 +40,24 @@ function JPNDATE($hiduke){
  global $YOUBI;
  if(! ISDATE($hiduke)) return false;
  $unixtime=strtotime($hiduke);
- $d=date("Y年m月d日",$unixtime);
+ $d=date("Y年n月j日",$unixtime);
  $w=date("w",$unixtime);
  $y=$YOUBI[$w];
  return $d."(".$y.")";
 }
 
 //-------------------------------------------//
-// checkcode生成                             //
+// 日付生成(short)                           //
 //-------------------------------------------//
-function GETCHECKCODE($str){
- $str=md5($str.SITEDIR.date("YmdHis"));
- return  $str;
-}//GETCHECKCODE
-
-//-------------------------------------------//
-// password生成                              //
-//-------------------------------------------//
-function GETPASS($str){
- $str=md5($str.SITEDIR);
- return  $str;
-}//GETPASS
+function JPNDATESHORT($hiduke){
+ global $YOUBI;
+ if(! ISDATE($hiduke)) return false;
+ $unixtime=strtotime($hiduke);
+ $d=date("n月j日",$unixtime);
+ $w=date("w",$unixtime);
+ $y=$YOUBI[$w];
+ return $d."(".$y.")";
+}
 
 //-------------------------------------------//
 // CSVの値を配列へセット                     //
@@ -235,9 +232,9 @@ function  CHKDATE($hiduke){
 //-------------------------------------------//
 //        CSVアップロード                    //
 //-------------------------------------------//
-function UPLOADCSV($file){
+function UPLOAD($directory,$filename){
 
- $filepath=DATADIR.$file.".csv";
+ $filepath=$directory.$filename.".csv";
  //アップロードファイル容量チェック
 
  //アップロードされたファイルを所定ディレクトリへコピー
@@ -261,7 +258,7 @@ function UPLOADCSV($file){
 
 
  return true;
-}//UPLOADCSV
+}//UPLOAD
 
 //-------------------------------------------//
 //        Imageアップロード                  //
@@ -270,8 +267,10 @@ function UPLOADCSV($file){
 //-------------------------------------------//
 function UPLOADIMAGE($jcode){
 
+ //JANコードチェック
+ //ここを追加すること！//
  //作業ディレクトリ
- $work=DATADIR.$jcode;
+ $work=IMGDIR.$jcode;
 
  //アップロードされたファイルを所定ディレクトリへコピー
  if(! move_uploaded_file($_FILES["upload_".$jcode]["tmp_name"],$work)){
