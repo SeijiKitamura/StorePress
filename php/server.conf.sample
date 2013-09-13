@@ -1,0 +1,14 @@
+<?php
+require_once("function.php");
+
+define("HOME","");         //ルートディレクトリ
+
+define("SITEDIR" ,"");     //保存場所(cron用)
+define("DBHOST"  ,"");     //サーバー名
+define("DBNAME"  ,"");     //データベース名
+define("DBUSER"  ,"");     //DBユーザー名
+define("DBPASS"  ,"");     //DBパスワード
+
+define("USERID"  ,"");     //管理画面ログインユーザー名
+define("PASS"    ,"");     //管理画面ログインパスワード
+?>
